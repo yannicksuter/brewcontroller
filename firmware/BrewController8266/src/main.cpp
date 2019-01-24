@@ -1,8 +1,5 @@
 #include <Arduino.h>
 #include <SPI.h>
-// #include <ILI9341_SPI.h>
-// #include <XPT2046_Touchscreen.h>
-// #include <MiniGrafx.h>
 
 #include <OneWire.h>
 #include <DallasTemperature.h>
@@ -15,9 +12,6 @@ extern void setupRendering(int rotation);
 extern void setupTouchScreen();
 extern void setupWifi();
 extern void setupTime();
-
-// extern MiniGrafx gfx;
-
 
 #define ENABLE_SSR
 #define ENABLE_TEMPERATUR
@@ -66,10 +60,8 @@ void setup() {
   digitalWrite(SSR2_PIN, LOW);
 #endif
 
-// #ifdef ENABLE_BUZZER
-  pinMode(BUZZER_PIN, OUTPUT);
-  digitalWrite(BUZZER_PIN, LOW);
-// #endif
+pinMode(BUZZER_PIN, OUTPUT);
+digitalWrite(BUZZER_PIN, LOW);
 
 #ifdef ENABLE_TEMPERATUR
   DS18B20.begin();
