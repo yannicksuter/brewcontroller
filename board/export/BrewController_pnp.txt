@@ -1,0 +1,112 @@
+*Pick And Place List
+*Company=
+*Author=
+*eMail=
+*
+*Project=BrewController
+*Date=20:39:43
+*CreatedBy=Fritzing 0.9.3b.04.19.5c895d327c44a3114e5fcc9d8260daf0cbb52806
+*
+*
+*Coordinates in mm, always center of component
+*Origin 0/0=Lower left corner of PCB
+*Rotation in degree (0-360, math. pos.)
+*
+*No;Value;Package;X;Y;Rotation;Side;Name
+1;;;71.6045;-31.6724;0;Bottom;Via13
+2;;;71.6045;-18.9724;0;Bottom;Via8
+3;;;48.7445;-46.9124;0;Bottom;Via41
+4;;;100.774;-9.6158;0;Bottom;Copper Fill8
+5;;;101.498;-8.8919;0;Bottom;Copper Fill21
+6;;;4.2945;-21.5124;0;Bottom;Via36
+7;;;93.1545;-18.2264;0;Bottom;Copper Fill22
+8;;;26.6954;-40.5784;0;Bottom;Copper Fill1
+9;;;71.6045;-39.2924;0;Bottom;Via18
+10;;;71.6045;-24.0524;0;Bottom;Via12
+11;;;48.7445;-41.8324;0;Bottom;Via43
+12;;;4.2945;-26.5924;0;Bottom;Via34
+13;;to-92-ammo;105.104;-50.7224;90;Bottom;Q1 BC549
+14;;;60.2033;-31.1089;0;Bottom;ESP8266
+15;;;48.7445;-16.4324;0;Bottom;Via53
+16;;;4.2945;-34.2124;0;Bottom;Via32
+17;;;9.37448;-21.5125;0;Bottom;Via4
+18;;;30.9645;-41.8324;0;Bottom;Via6
+19;;;48.7445;-49.4524;0;Bottom;Via40
+20;;THT;115.8;-12.8293;0;Bottom;TEMPERATURE
+21;;;94.5134;-17.5152;0;Bottom;Copper Fill19
+22;1k;THT;97.0045;-32.9424;180;Bottom;R10
+23;;;48.7445;-31.6724;0;Bottom;Via47
+24;;3 mm [THT];116.054;-24.6314;180;Bottom;AGITATOR_LED
+25;;;26.7312;-2.88574;0;Bottom;TXT1
+26;;;92.329;-19.0519;0;Bottom;Copper Fill23
+27;;;41.1052;-30.653;180;Bottom;DISPLAY
+28;;;4.2945;-18.9724;0;Bottom;Via37
+29;;3 mm [THT];116.054;-42.4114;180;Bottom;HEATER_LED
+30;;;3.02448;-58.3424;0;Bottom;Hole2
+31;;;71.6045;-13.8924;0;Bottom;Via11
+32;;;20.8045;-31.6724;0;Bottom;Via5
+33;;;100.051;-8.8919;0;Bottom;Copper Fill10
+34;;;93.9546;-19.0519;0;Bottom;Copper Fill13
+35;;;14.4545;-13.8925;0;Bottom;Via3
+36;;;4.2945;-31.6724;0;Bottom;Via31
+37;;;101.498;-8.8919;0;Bottom;Copper Fill11
+38;;;71.6045;-29.1324;0;Bottom;Via14
+39;;;30.9645;-36.7524;0;Bottom;Via1
+40;;;60.9854;-30.52;0;Bottom;Copper Fill6
+41;;;39.878;-39.918;0;Bottom;Copper Fill16
+42;;;4.2945;-36.7524;0;Bottom;Via30
+43;;;85.5746;-8.81232;0;Bottom;Hole5
+44;;;3.02448;-2.4625;0;Bottom;Hole1
+45;;;71.6045;-44.3724;0;Bottom;Via19
+46;;;48.7445;-24.0524;0;Bottom;Via50
+47;;;26.5176;-29.1484;0;Bottom;Copper Fill5
+48;;;48.7445;-29.1324;0;Bottom;Via49
+49;;;16.4338;-21.5284;0;Bottom;Copper Fill7
+50;;;4.2945;-16.4324;0;Bottom;Via38
+51;;;118.594;-2.4625;0;Bottom;Hole4
+52;;;100.051;-8.8919;0;Bottom;Copper Fill20
+53;;;60.9854;-30.52;0;Bottom;Copper Fill15
+54;;;48.7445;-13.8924;0;Bottom;Via54
+55;;;71.6045;-46.9124;0;Bottom;Via23
+56;;;41.148;-38.0384;0;Bottom;Copper Fill17
+57;;;4.2945;-41.8324;0;Bottom;Via28
+58;;;4.2945;-44.3724;0;Bottom;Via29
+59;;;4.2945;-24.0524;0;Bottom;Via35
+60;;;48.7445;-26.5924;0;Bottom;Via48
+61;;;118.594;-58.3424;0;Bottom;Hole3
+62;;;85.5746;-51.9924;0;Bottom;Hole6
+63;;;48.7445;-21.5124;0;Bottom;Via51
+64;;;29.6945;-26.5925;0;Bottom;Via2
+65;;;26.5176;-35.4984;0;Bottom;Copper Fill3
+66;;;97.0045;-8.81241;90;Bottom;BUZZER
+67;1k;THT;84.3045;-21.5124;180;Bottom;R7
+68;;;48.7445;-34.2124;0;Bottom;Via46
+69;1k;THT;97.0045;-50.7224;180;Bottom;R8
+70;;;71.6045;-21.5124;0;Bottom;Via9
+71;;;71.6045;-36.7524;0;Bottom;Via17
+72;;;48.7445;-44.3724;0;Bottom;Via42
+73;;;92.329;-19.0519;0;Bottom;Copper Fill12
+74;;to-92-ammo;105.104;-32.9424;90;Bottom;Q1 BC550
+75;;;71.6045;-16.4324;0;Bottom;Via10
+76;;THT;115.8;-33.1094;0;Bottom;AGITATOR
+77;;;71.6045;-26.5924;0;Bottom;Via15
+78;;;52.5018;-54.4976;0;Bottom;Copper Fill14
+79;;;2.3368;-36.743;0;Bottom;Copper Fill2
+80;;;71.6045;-49.4524;0;Bottom;Via24
+81;4.7k;THT;104.624;-11.3524;90;Bottom;R2
+82;;;71.6045;-34.2124;0;Bottom;Via16
+83;;;48.7445;-39.2924;0;Bottom;Via44
+84;;THT;115.8;-50.8894;0;Bottom;HEATER
+85;;;71.6045;-41.8324;0;Bottom;Via20
+86;;;50.6984;-20.9188;0;Bottom;Copper Fill18
+87;;;2.9972;-26.583;0;Bottom;Copper Fill4
+88;;;18.2645;-24.0525;0;Bottom;Via7
+89;;;100.774;-8.168;0;Bottom;Copper Fill9
+90;;;4.2945;-39.2924;0;Bottom;Via26
+91;;;48.7445;-18.9724;0;Bottom;Via52
+92;;to-92-ammo;92.7153;-21.5123;-90;Bottom;Q1 BC548
+93;;;4.2945;-13.8924;0;Bottom;Via39
+94;220;THT;97.0045;-40.5624;0;Bottom;R9
+95;;;4.2945;-46.9124;0;Bottom;Via25
+96;;;48.7445;-36.7524;0;Bottom;Via45
+97;;;4.2945;-29.1324;0;Bottom;Via33
