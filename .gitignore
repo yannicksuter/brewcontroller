@@ -31,6 +31,9 @@
 *.out
 *.app
 
+# python
+img2c/*.h
+
 # osx 
 .idea
 .DS_Store

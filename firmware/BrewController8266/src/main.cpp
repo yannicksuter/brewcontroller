@@ -97,7 +97,7 @@ void loop() {
   // rendering
   drawClearScreen();
   drawTime(time_style_12h);
-  drawTemperatur(cntrl_water_temp);
+  drawTemperatur(cntrl_water_temp, cntrl_ssr_state);
   if (isTouched(500)) {
     TS_Point p = getTouchPoint();
     time_style_12h = !time_style_12h;

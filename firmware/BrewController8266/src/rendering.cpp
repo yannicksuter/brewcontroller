@@ -1,7 +1,7 @@
 #include "settings.h"
 
-#include "gfx/ILI9341_SPI.h"
-#include "gfx/MiniGrafx.h"
+#include <ILI9341_SPI.h>
+#include <MiniGrafx.h>
 #include <XPT2046_Touchscreen.h>
 
 #define MINI_BLACK 15
@@ -11,6 +11,9 @@
 
 #include "xpm/palette.h"
 #include "xpm/fan_on.h"
+#include "xpm/fan_off.h"
+#include "xpm/fire_on.h"
+#include "xpm/fire_off.h"
 
 // uint16_t palette[] = {ILI9341_BLACK, ILI9341_WHITE, ILI9341_YELLOW, 0x7E3C};
 
@@ -116,16 +119,19 @@ void drawTime(bool time_style_12h) {
   }
 }
 
-void drawTemperatur(float temp) {
+void drawTemperatur(float temp, bool blink) {
   gfx.setTextAlignment(TEXT_ALIGN_CENTER_BOTH);
   gfx.setColor(MINI_YELLOW);
   gfx.setFont(ArialMT_Plain_24);
   gfx.drawString(center_width, center_height, String("TempC: ") + String(temp));
 
-  // gfx.setColor(MINI_YELLOW);
-  // gfx.fillRect(0, 0, FIRE_WIDTH, FIRE_HEIGHT);
-
-  gfx.drawRaw(0, 0, FAN_ON_WIDTH, FAN_ON_HEIGHT, FAN_ON_DATA);
+  if (!blink) {
+    gfx.drawRaw(0, 0, FAN_ON_WIDTH, FAN_ON_HEIGHT, FAN_ON_DATA);
+    gfx.drawRaw(0, 25, FIRE_OFF_WIDTH, FIRE_OFF_HEIGHT, FIRE_OFF_DATA);
+  } else {
+    gfx.drawRaw(0, 0, FAN_OFF_WIDTH, FAN_OFF_HEIGHT, FAN_OFF_DATA);
+    gfx.drawRaw(0, 25, FIRE_ON_WIDTH, FIRE_ON_HEIGHT, FIRE_ON_DATA);
+  }
 }
 
 void drawTouch(int x, int y) {

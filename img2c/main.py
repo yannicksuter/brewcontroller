@@ -48,9 +48,9 @@ if __name__ == "__main__":
     pix = im_quant.load()
     for k, v in sprites.items():
         with open(f"{k}.h", "w+") as header_out:
-            header_out.write(f"static const uint32_t {k.upper()}_WIDTH={v['width']};\n")
-            header_out.write(f"static const uint32_t {k.upper()}_HEIGHT={v['height']};\n")
-            header_out.write(f"static const uint8_t {k.upper()}_DATA[]={{")
+            header_out.write(f"static const uint32_t {k.upper()}_WIDTH = {v['width']};\n")
+            header_out.write(f"static const uint32_t {k.upper()}_HEIGHT = {v['height']};\n")
+            header_out.write(f"static const uint8_t {k.upper()}_DATA[] = {{ ")
             for y in range(0, v['height']):
                 for x in range(0, v['width']):
                     header_out.write(f"{pix[v['x']+x, v['y']+y]},")

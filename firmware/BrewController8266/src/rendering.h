@@ -11,7 +11,7 @@ extern void drawClearScreen();
 extern void drawScreen(int screen);
 extern void drawWifiQuality();
 extern void drawTime(bool time_style_12h);
-extern void drawTemperatur(float temp);
+extern void drawTemperatur(float temp, bool blink);
 extern void drawTouch(int x, int y);
 extern void drawCommit();
 
