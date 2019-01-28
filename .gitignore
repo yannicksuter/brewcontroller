@@ -32,4 +32,5 @@
 *.app
 
 # osx 
+.idea
 .DS_Store

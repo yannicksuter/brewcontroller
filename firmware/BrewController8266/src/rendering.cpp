@@ -4,11 +4,15 @@
 #include "gfx/MiniGrafx.h"
 #include <XPT2046_Touchscreen.h>
 
-#define MINI_BLACK 0
-#define MINI_WHITE 1
-#define MINI_YELLOW 2
-#define MINI_BLUE 3
-uint16_t palette[] = {ILI9341_BLACK, ILI9341_WHITE, ILI9341_YELLOW, 0x7E3C};
+#define MINI_BLACK 15
+#define MINI_WHITE 0
+#define MINI_YELLOW 0
+#define MINI_BLUE 0
+
+#include "xpm/palette.h"
+#include "xpm/fan_on.h"
+
+// uint16_t palette[] = {ILI9341_BLACK, ILI9341_WHITE, ILI9341_YELLOW, 0x7E3C};
 
 // uint16_t palette[] = {ILI9341_BLACK, // 0
 //                       ILI9341_WHITE, // 1
@@ -116,10 +120,12 @@ void drawTemperatur(float temp) {
   gfx.setTextAlignment(TEXT_ALIGN_CENTER_BOTH);
   gfx.setColor(MINI_YELLOW);
   gfx.setFont(ArialMT_Plain_24);
-  gfx.drawString(center_width, center_height, String("Temp: ") + String(temp));
+  gfx.drawString(center_width, center_height, String("TempC: ") + String(temp));
 
-  gfx.drawRaw(0,0,0,0,NULL);
+  // gfx.setColor(MINI_YELLOW);
+  // gfx.fillRect(0, 0, FIRE_WIDTH, FIRE_HEIGHT);
 
+  gfx.drawRaw(0, 0, FAN_ON_WIDTH, FAN_ON_HEIGHT, FAN_ON_DATA);
 }
 
 void drawTouch(int x, int y) {

@@ -645,9 +645,6 @@ void MiniGrafx::drawXbm(int16_t xMove, int16_t yMove, int16_t width, int16_t hei
   }
 }
 
-void MiniGrafx::drawRaw(int16_t x, int16_t y, int16_t width, int16_t height, const char *raw) {
-}
-
 void MiniGrafx::drawBmpFromFile(String filename, uint8_t xMove, uint16_t yMove) {
   Serial.println("In drawBmpFromFile");
   File     bmpFile;
@@ -1181,4 +1178,15 @@ void MiniGrafx::setMirroredHorizontally(boolean isMirroredHorizontally) {
 
 void MiniGrafx::setMirroredVertically(boolean isMirroredVertically) {
   this->isMirroredVertically = isMirroredVertically;
+}
+
+void MiniGrafx::drawRaw(int16_t pos_x, int16_t pos_y, int16_t width, int16_t height, const uint8_t *raw) {
+  // setColor(ILI9341_YELLOW);
+  // fillRect(pos_x, pos_y, width, height);
+  for (int y=0; y<height; y++){
+    for (int x=0; x<width; x++){
+      setColor(raw[y*width+x]);
+      setPixel(pos_x+x, pos_y+y);
+    }
+  }
 }

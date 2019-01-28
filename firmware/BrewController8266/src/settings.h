@@ -19,5 +19,6 @@
 // display
 #define TFT_WIDTH 320
 #define TFT_HEIGHT 240
-#define BITS_PER_PIXEL 2
+// #define BITS_PER_PIXEL 2
+#define BITS_PER_PIXEL 4
 #define MINI_BLACK 0
