@@ -120,7 +120,7 @@ class MiniGrafx {
   void drawTriangle(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t x3, uint16_t y3);
   uint16_t getStringWidth(const char* text, uint16_t length);
   void drawXbm(int16_t x, int16_t y, int16_t width, int16_t height, const char *xbm);
-  void drawRaw(int16_t x, int16_t y, int16_t width, int16_t height, const uint8_t *raw);
+  void drawRaw(int16_t x, int16_t y, int16_t width, int16_t height, const char *raw);
   void drawBmpFromFile(String filename, uint8_t x, uint16_t y);
   void drawBmpFromPgm(const char *xbm, uint8_t x, uint16_t y);
   void drawPalettedBitmapFromPgm(uint16_t x, uint16_t y, const char *palBmp);

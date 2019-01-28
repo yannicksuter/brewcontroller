@@ -70,12 +70,13 @@ digitalWrite(BUZZER_PIN, LOW);
   setupRendering(3);
   setupTouchScreen();
   setupTime();
+
+  drawClearScreen();
 }
 
 int last_x = 0;
 int last_y = 0;
 
-bool time_style_12h = IS_STYLE_12HR;
 void loop() {
 
   // update control states
@@ -95,15 +96,12 @@ void loop() {
   }
 
   // rendering
-  drawClearScreen();
-  drawTime(time_style_12h);
-  drawTemperatur(cntrl_water_temp, cntrl_ssr_state);
+  drawTemperatur(cntrl_water_temp, 43.f, cntrl_ssr_state);
   if (isTouched(500)) {
     TS_Point p = getTouchPoint();
-    time_style_12h = !time_style_12h;
     last_x = p.x;
     last_y = p.y;
   }
-  drawTouch(last_x, last_y);
+  // drawTouch(last_x, last_y);
   drawCommit();
 }
