@@ -8,6 +8,7 @@
 #define MINI_WHITE 0
 
 #include "xpm/palette.h"
+
 #include "xpm/fan_on.h"
 #include "xpm/fan_off.h"
 #include "xpm/fire_on.h"
@@ -22,7 +23,11 @@
 #include "xpm/font_7.h"
 #include "xpm/font_8.h"
 #include "xpm/font_9.h"
+
+#include "xpm/min_label.h"
 #include "xpm/c_label.h"
+
+#include "xpm/clock_icon.h"
 #include "xpm/sensor_icon.h"
 #include "xpm/target_icon.h"
 
@@ -67,8 +72,16 @@ void setupRendering(int rotation) {
 
 void drawClearScreen() {
   gfx.fillBuffer(MINI_BLACK);
+
+  // icons
+  drawXPM(49, 17, CLOCK_ICON_WIDTH, CLOCK_ICON_HEIGHT, CLOCK_ICON_DATA);
   drawXPM(49, 138, TARGET_ICON_WIDTH, TARGET_ICON_HEIGHT, TARGET_ICON_DATA);
   drawXPM(164, 138, SENSOR_ICON_WIDTH, SENSOR_ICON_HEIGHT, SENSOR_ICON_DATA);
+
+  // labels
+  drawXPM(272, 84, MIN_LABEL_WIDTH, MIN_LABEL_HEIGHT, MIN_LABEL_DATA);
+  drawXPM(162, 205, C_LABEL_WIDTH, C_LABEL_HEIGHT, C_LABEL_DATA);
+  drawXPM(272, 205, C_LABEL_WIDTH, C_LABEL_HEIGHT, C_LABEL_DATA);
 }
 
 void drawCommit() {
@@ -88,48 +101,61 @@ void drawCalibrationScreen() {
   gfx.drawString(120, 160, "Please calibrate\ntouch screen by\ntouch point");
 }
 
-void drawNumber(int n, int posX, int posY) {
+void drawNumber(int n, int posX, int posY, bool bForceAllDigits = false) {
+  // '4' needs additional cleanup
+  gfx.setColor(MINI_BLACK);
+  gfx.fillRect(posX-3, posY, 3, 85);
+  gfx.fillRect(posX+40-3, posY, 3, 85);
+
+  // draw digits
   int id1 = 0;
-  if (n>9) {
+  if (n>9 || bForceAllDigits) {
     id1 = (int)(n/10.f);
-    if (id1 == 3){
-      gfx.setColor(MINI_BLACK);
-      gfx.fillRect(posX, posY, FONT_WIDTH[id1], 85);
-    }
     drawXPM(posX-((id1==4)?3:0), posY, FONT_WIDTH[id1], 85, FONT_DATA[id1]);
   }
   int id2 = n - id1*10;
-  if (id2 == 3){
-    gfx.setColor(MINI_BLACK);
-    gfx.fillRect(posX+40, posY, FONT_WIDTH[id2], 85);
-  }
   drawXPM(posX+40-((id2==4)?3:0), posY, FONT_WIDTH[id2], 85, FONT_DATA[id2]);
 }
 
-int g_curTemp = 0;
-int g_curTarget = 0;
-void drawTemperatur(float curTemp, float curTarget, bool bBlink) {
+int g_curTemp = -1;
+int g_curTarget = -1;
+void drawTemperatur(float curTemp, float curTarget, bool bAnimation) {
   if (g_curTemp != (int)curTemp) {
     g_curTemp = (int)(curTemp+.5f);
     g_curTemp = (g_curTemp>99)?99:(g_curTemp<0)?0:g_curTemp;
     drawNumber(g_curTemp, 192, 138);
-    drawXPM(272, 205, C_LABEL_WIDTH, C_LABEL_HEIGHT, C_LABEL_DATA);
   }
 
   if (g_curTarget != (int)curTarget) {
     g_curTarget = (int)(curTarget+.5f);
     g_curTarget = (g_curTarget>99)?99:(g_curTarget<0)?0:g_curTarget;
     drawNumber(g_curTarget, 82, 138);
-    drawXPM(162, 205, C_LABEL_WIDTH, C_LABEL_HEIGHT, C_LABEL_DATA);
   }
 
-  if (!bBlink) {
+  if (!bAnimation) {
     drawXPM(49, 199, FAN_ON_WIDTH, FAN_ON_HEIGHT, FAN_ON_DATA);
     drawXPM(51, 169, FIRE_OFF_WIDTH, FIRE_OFF_HEIGHT, FIRE_OFF_DATA);
   } else {
     drawXPM(49, 199, FAN_OFF_WIDTH, FAN_OFF_HEIGHT, FAN_OFF_DATA);
     drawXPM(50, 169, FIRE_ON_WIDTH, FIRE_ON_HEIGHT, FIRE_ON_DATA);
   }
+}
+
+int g_curMin = -1;
+int g_curSec = -1;
+void drawTimer(int min, int sec, bool bAnimation) {
+  if (g_curMin != min) {
+    g_curMin = min;
+    drawNumber(g_curMin, 82, 17);
+  }
+  if (g_curSec != sec) {
+    g_curSec = sec;
+    drawNumber(g_curSec, 192, 17, true);
+  }
+
+  gfx.setColor(bAnimation ? MINI_BLACK : MINI_WHITE);
+  gfx.fillRect(170, 66, 10, 10);
+  gfx.fillRect(170, 92, 10, 10);
 }
 
 void drawTouch(int x, int y) {

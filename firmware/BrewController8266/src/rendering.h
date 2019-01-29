@@ -4,18 +4,12 @@
 extern void drawCalibrationCallback(int16_t x, int16_t y);
 extern void drawCalibrationScreen();
 
-extern void drawWeather();
-extern void drawAbout();
-
 extern void drawClearScreen();
 extern void drawScreen(int screen);
-extern void drawWifiQuality();
-extern void drawTime(bool time_style_12h);
 extern void drawTouch(int x, int y);
 extern void drawCommit();
 
-
-extern void drawTemperatur(float curTemp, float curTarget, bool bBlink);
-
+extern void drawTimer(int min, int sec, bool bAnimation);
+extern void drawTemperatur(float curTemp, float curTarget, bool bAnimation);
 
 #endif

@@ -72,6 +72,7 @@ digitalWrite(BUZZER_PIN, LOW);
   drawClearScreen();
 }
 
+int time_sec = 0;
 int last_x = 0;
 int last_y = 0;
 
@@ -91,10 +92,13 @@ void loop() {
 #endif
 
     cntrl_last_update = millis();
+    time_sec++;
   }
 
   // rendering
+  drawTimer((int)(time_sec/60.f), time_sec%60, cntrl_ssr_state);
   drawTemperatur(cntrl_water_temp, 43.f, cntrl_ssr_state);
+
   if (isTouched(500)) {
     TS_Point p = getTouchPoint();
     last_x = p.x;
