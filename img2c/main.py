@@ -32,6 +32,7 @@ if __name__ == "__main__":
     im_quant = im.quantize(col_count, kmeans=3)
     im_quant.save('test.png')
 
+    print('writting palette..')
     with open('palette.h', 'w') as palette_out:
         im_quant.getpalette()
         colors = []
@@ -47,6 +48,7 @@ if __name__ == "__main__":
 
     pix = im_quant.load()
     for k, v in sprites.items():
+        print(f'writting {k} sprite..')
         with open(f"{k}.h", "w+") as header_out:
             header_out.write(f"static const uint16_t {k.upper()}_WIDTH = {v['width']};\n")
             header_out.write(f"static const uint16_t {k.upper()}_HEIGHT = {v['height']};\n")

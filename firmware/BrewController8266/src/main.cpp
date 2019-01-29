@@ -11,7 +11,6 @@
 extern void setupRendering(int rotation);
 extern void setupTouchScreen();
 extern void setupWifi();
-extern void setupTime();
 
 #define ENABLE_SSR
 #define ENABLE_TEMPERATUR
@@ -69,7 +68,6 @@ digitalWrite(BUZZER_PIN, LOW);
 
   setupRendering(3);
   setupTouchScreen();
-  setupTime();
 
   drawClearScreen();
 }
