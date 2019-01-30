@@ -3,9 +3,11 @@
 #include <ILI9341_SPI.h>
 #include <MiniGrafx.h>
 #include <XPT2046_Touchscreen.h>
+#include "button.h"
 
-#define MINI_BLACK 15
-#define MINI_WHITE 0
+#define COLOR_BLACK 15
+#define COLOR_GREY 10
+#define COLOR_WHITE 0
 
 #include "xpm/palette.h"
 
@@ -31,8 +33,27 @@
 #include "xpm/sensor_icon.h"
 #include "xpm/target_icon.h"
 
+#include "xpm/plus_up.h"
+#include "xpm/minus_up.h"
+#include "xpm/play_up.h"
+#include "xpm/pause_up.h"
+#include "xpm/plus_down.h"
+#include "xpm/minus_down.h"
+#include "xpm/play_down.h"
+#include "xpm/pause_down.h"
+
 static const char* FONT_DATA[10] = {FONT_0_DATA, FONT_1_DATA, FONT_2_DATA, FONT_3_DATA, FONT_4_DATA, FONT_5_DATA, FONT_6_DATA, FONT_7_DATA, FONT_8_DATA, FONT_9_DATA};
 static const uint16_t FONT_WIDTH[10] = {FONT_0_WIDTH, FONT_1_WIDTH, FONT_2_WIDTH, FONT_3_WIDTH, FONT_4_WIDTH, FONT_5_WIDTH, FONT_6_WIDTH, FONT_7_WIDTH, FONT_8_WIDTH, FONT_9_WIDTH};
+
+static const int CONTROL_COUNT = 6;
+Button controls[CONTROL_COUNT] = {
+  Button(1, 17, PLUS_UP_WIDTH, PLUS_UP_HEIGHT, PLUS_UP_DATA, PLUS_DOWN_DATA),
+  Button(1, 61, MINUS_UP_WIDTH, MINUS_UP_HEIGHT, MINUS_UP_DATA, MINUS_DOWN_DATA),
+  Button(278, 17, PLAY_UP_WIDTH, PLAY_UP_HEIGHT, PLAY_UP_DATA, PLAY_DOWN_DATA),
+  Button(1, 138, PLUS_UP_WIDTH, PLUS_UP_HEIGHT, PLUS_UP_DATA, PLUS_DOWN_DATA),
+  Button(1, 182, MINUS_UP_WIDTH, MINUS_UP_HEIGHT, MINUS_UP_DATA, MINUS_DOWN_DATA),
+  Button(278, 138, PAUSE_UP_WIDTH, PAUSE_UP_HEIGHT, PAUSE_UP_DATA, PLAY_DOWN_DATA)
+};
 
 ILI9341_SPI tft = ILI9341_SPI(TFT_CS, TFT_DC);
 MiniGrafx gfx = MiniGrafx(&tft, BITS_PER_PIXEL, palette);
@@ -63,7 +84,7 @@ void drawXPM(int16_t pos_x, int16_t pos_y, int16_t width, int16_t height, const 
 void setupRendering(int rotation) {
   gfx.init();
   gfx.setRotation(rotation);
-  gfx.fillBuffer(MINI_BLACK);
+  gfx.fillBuffer(COLOR_BLACK);
   gfx.commit();
 
   center_width = gfx.getWidth() >> 1;
@@ -71,7 +92,7 @@ void setupRendering(int rotation) {
 }
 
 void drawClearScreen() {
-  gfx.fillBuffer(MINI_BLACK);
+  gfx.fillBuffer(COLOR_BLACK);
 
   // icons
   drawXPM(49, 17, CLOCK_ICON_WIDTH, CLOCK_ICON_HEIGHT, CLOCK_ICON_DATA);
@@ -79,9 +100,14 @@ void drawClearScreen() {
   drawXPM(164, 138, SENSOR_ICON_WIDTH, SENSOR_ICON_HEIGHT, SENSOR_ICON_DATA);
 
   // labels
-  drawXPM(272, 84, MIN_LABEL_WIDTH, MIN_LABEL_HEIGHT, MIN_LABEL_DATA);
-  drawXPM(162, 205, C_LABEL_WIDTH, C_LABEL_HEIGHT, C_LABEL_DATA);
-  drawXPM(272, 205, C_LABEL_WIDTH, C_LABEL_HEIGHT, C_LABEL_DATA);
+  drawXPM(278, 84, MIN_LABEL_WIDTH, MIN_LABEL_HEIGHT, MIN_LABEL_DATA);
+  drawXPM(168, 205, C_LABEL_WIDTH, C_LABEL_HEIGHT, C_LABEL_DATA);
+  drawXPM(278, 205, C_LABEL_WIDTH, C_LABEL_HEIGHT, C_LABEL_DATA);
+
+  // controls
+  for (int i=0; i<CONTROL_COUNT; i++) {
+    controls[i].draw();
+  }
 }
 
 void drawCommit() {
@@ -94,8 +120,8 @@ void drawCalibrationCallback(int16_t x, int16_t y) {
 }
 
 void drawCalibrationScreen() {
-  gfx.fillBuffer(MINI_BLACK);
-  gfx.setColor(MINI_WHITE);
+  gfx.fillBuffer(COLOR_BLACK);
+  gfx.setColor(COLOR_WHITE);
   gfx.setTextAlignment(TEXT_ALIGN_CENTER);
   gfx.setFont(ArialMT_Plain_10);
   gfx.drawString(120, 160, "Please calibrate\ntouch screen by\ntouch point");
@@ -103,7 +129,7 @@ void drawCalibrationScreen() {
 
 void drawNumber(int n, int posX, int posY, bool bForceAllDigits = false) {
   // '4' needs additional cleanup
-  gfx.setColor(MINI_BLACK);
+  gfx.setColor(COLOR_BLACK);
   gfx.fillRect(posX-3, posY, 3, 85);
   gfx.fillRect(posX+40-3, posY, 3, 85);
 
@@ -153,7 +179,7 @@ void drawTimer(int min, int sec, bool bAnimation) {
     drawNumber(g_curSec, 192, 17, true);
   }
 
-  gfx.setColor(bAnimation ? MINI_BLACK : MINI_WHITE);
+  gfx.setColor(bAnimation ? COLOR_GREY : COLOR_WHITE);
   gfx.fillRect(170, 66, 10, 10);
   gfx.fillRect(170, 92, 10, 10);
 }

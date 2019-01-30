@@ -12,4 +12,6 @@ extern void drawCommit();
 extern void drawTimer(int min, int sec, bool bAnimation);
 extern void drawTemperatur(float curTemp, float curTarget, bool bAnimation);
 
+extern void drawXPM(int16_t pos_x, int16_t pos_y, int16_t width, int16_t height, const char *xpm);
+
 #endif
