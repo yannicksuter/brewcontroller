@@ -29,8 +29,13 @@ uint8_t cntrl_wait_MS = 1000;
 uint8_t cntrl_last_update = 0;
 bool cntrl_ssr_state = false;
 float cntrl_water_temp = 0.f;
-
 uint8_t g_rotation = 3;
+
+void callbackPressed(int id) {
+}
+
+void callbackReleased(int id) {
+}
 
 float getTemperature() {
   float tempC = 0.f;
@@ -67,12 +72,18 @@ digitalWrite(BUZZER_PIN, LOW);
   setupRendering(g_rotation);
   setupTouchScreen(g_rotation, true);
 
+  // register callbacks
+  for (int i=0; i<CONTROL_COUNT; i++) {
+    controls[i].registerCallbacks(callbackPressed, callbackReleased);
+  }
+
   drawClearScreen();
 }
 
 int time_sec = 0;
 
 void loop() {
+  updateTouchScreen();
 
   // update control states
   if (millis()-cntrl_last_update > cntrl_wait_MS) {
@@ -94,14 +105,6 @@ void loop() {
   // rendering
   drawTimer((int)(time_sec/60.f), time_sec%60, cntrl_ssr_state);
   drawTemperatur(cntrl_water_temp, 43.f, cntrl_ssr_state);
-
-  if (isTouched(500)) {
-    TS_Point p = getTouchPoint();
-    drawTouch(p.x, p.y);
-    for (int i=0; i<CONTROL_COUNT; i++) {
-      controls[i].isPressed(p.x, p.y);
-    }
-    drawControls();
-  }
+  drawControls();
   drawCommit();
 }

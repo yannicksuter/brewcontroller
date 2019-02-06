@@ -11,3 +11,11 @@
 #define TFT_WIDTH 320
 #define TFT_HEIGHT 240
 #define BITS_PER_PIXEL 4
+
+// controls
+#define CNTL_TIME_PLUS 0
+#define CNTL_TIME_MINUS 1
+#define CNTL_TIMER 2
+#define CNTL_TEMP_PLUS 3
+#define CNTL_TEMP_MINUS 4
+#define CNTL_HEATER 5

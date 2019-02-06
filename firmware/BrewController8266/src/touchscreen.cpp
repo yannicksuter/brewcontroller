@@ -24,6 +24,25 @@ void setupTouchScreen(uint8_t rotation, bool forceCalibration) {
   }
 }
 
+bool g_bTouched = false;
+TS_Point g_pLastPointTouched;
+void updateTouchScreen() {
+  if (touchController.isTouched()) {
+    g_bTouched = true;
+    g_pLastPointTouched = touchController.getPoint();
+    for (int i=0; i<CONTROL_COUNT; i++) {
+      controls[i].verifyPressed(g_pLastPointTouched.x, g_pLastPointTouched.y);
+    }
+  } else {
+    if (g_bTouched) {
+      for (int i=0; i<CONTROL_COUNT; i++) {
+        controls[i].verifyReleased(g_pLastPointTouched.x, g_pLastPointTouched.y);
+      }
+    }
+    g_bTouched = false;
+  }
+}
+
 bool isTouched(int16_t debounceMillis) {
   return touchController.isTouched(debounceMillis);
 }
@@ -110,7 +129,7 @@ bool TouchControllerWS::isCalibrationFinished() {
 }
 
 bool TouchControllerWS::isTouched() {
-  touchScreen->touched();
+  return touchScreen->touched();
 }
 
 bool TouchControllerWS::isTouched(int16_t debounceMillis) {
