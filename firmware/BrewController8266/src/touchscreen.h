@@ -16,7 +16,7 @@ class TouchControllerWS {
     void continueCalibration();
     bool isCalibrationFinished();
     bool isTouched();
-    bool isTouched(int16_t debounceMillis);
+    bool isTouched(uint16_t debounceMillis);
     TS_Point getPoint();
 
   private:
@@ -26,8 +26,8 @@ class TouchControllerWS {
     int ax = 0;
     int ay = 0;
     int state = 0;
-    long lastStateChange = 0;
-    long lastTouched = 0;
+    uint16_t m_lastStateChange = 0;
+    uint16_t m_lastTouched = 0;
     TS_Point p1, p2;
 };
 

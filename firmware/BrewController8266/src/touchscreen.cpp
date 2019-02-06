@@ -108,14 +108,14 @@ void TouchControllerWS::continueCalibration() {
     if (touchScreen->touched()) {
       p1 = p;
       state++;
-      lastStateChange = millis();
+      m_lastStateChange = millis();
     }
   } else if (state == 1) {
     drawCalibrationCallback(TFT_WIDTH-10, TFT_HEIGHT-10);
-    if (touchScreen->touched() && (millis() - lastStateChange > 1000)) {
+    if (touchScreen->touched() && (millis() - m_lastStateChange > 1000)) {
       p2 = p;
       state++;
-      lastStateChange = millis();
+      m_lastStateChange = millis();
       dx = float(TFT_WIDTH) / abs(p1.y - p2.y);
       dy = float(TFT_HEIGHT) / abs(p1.x - p2.x);
       ax = p1.y < p2.y ? p1.y : p2.y;
@@ -132,9 +132,9 @@ bool TouchControllerWS::isTouched() {
   return touchScreen->touched();
 }
 
-bool TouchControllerWS::isTouched(int16_t debounceMillis) {
-  if (touchScreen->touched() && millis() - lastTouched > debounceMillis) {
-    lastTouched = millis();
+bool TouchControllerWS::isTouched(uint16_t debounceMillis) {
+  if (touchScreen->touched() && millis() - m_lastTouched > debounceMillis) {
+    m_lastTouched = millis();
     return true;
   }
   return false;

@@ -14,8 +14,13 @@ Button::Button(int id, int x, int y, int width, int heigt, const char *xpm_up, c
   m_bEnabled = true;
   m_bIsPressedState = false;
   m_bDirty = true;
-  m_pFncPressed = NULL;
-  m_pFncReleased = NULL;
+  m_pCallbackPressed = NULL;
+  m_pCallbackReleased = NULL;
+}
+
+void Button::setImages(const char *xpm_up, const char *xpm_down) {
+  m_pXPM_Up = xpm_up;
+  m_pXPM_Down = xpm_down;
 }
 
 void Button::enable() {
@@ -42,15 +47,15 @@ void Button::changeState(bool bPressed) {
   m_bIsPressedState = bPressed;
 }
 
-void Button::registerCallbacks(callbackPtr pressed, callbackPtr released) {
-  m_pFncPressed = pressed;
-  m_pFncReleased = released;
+void Button::registerCallbacks(eventCallbackPtr pressed, eventCallbackPtr released) {
+  m_pCallbackPressed = pressed;
+  m_pCallbackReleased = released;
 }
 
 bool Button::verifyPressed(int x, int y) {
  if (m_bEnabled && x >= m_x && x <= m_x+m_width && y >= m_y && y <= m_y+m_height) {
-    if (m_pFncPressed) {
-      m_pFncPressed(m_id);
+    if (m_pCallbackPressed) {
+      m_pCallbackPressed(m_id, this);
     }
     changeState(true);
     return true;
@@ -61,8 +66,8 @@ bool Button::verifyPressed(int x, int y) {
 
 bool Button::verifyReleased(int x, int y) {
  if (m_bEnabled && x >= m_x && x <= m_x+m_width && y >= m_y && y <= m_y+m_height) {
-   if (m_pFncReleased) {
-     m_pFncReleased(m_id);
+   if (m_pCallbackReleased) {
+     m_pCallbackReleased(m_id, this);
    }
    changeState(false);
     return true;

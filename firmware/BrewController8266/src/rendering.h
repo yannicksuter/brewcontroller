@@ -13,6 +13,7 @@ extern void drawClearScreen();
 extern void drawControls(bool forceDraw = false);
 extern void drawTimer(int min, int sec, bool bAnimation);
 extern void drawTemperatur(float curTemp, float curTarget, bool bAnimation);
+extern void drawIcons(bool bHeater, bool bAgitator, bool forceDraw = false);
 extern void drawTouch(int x, int y);
 extern void drawCommit();
 

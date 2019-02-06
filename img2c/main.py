@@ -40,11 +40,14 @@ if __name__ == "__main__":
             # print(f'{col[0]} {col[1]} {col[2]} -> {conv24to16bit_hex(col[0], col[1], col[2])}')
             colors.append(conv24to16bit_hex(col[0], col[1], col[2]))
 
+        palette_out.write(f"#ifndef PALETTE_H\n")
+        palette_out.write(f"#define PALETTE_H\n\n")
         palette_out.write(f'static const uint16_t palette_len = {col_count};\n')
         palette_out.write('uint16_t palette[] = {\n')
         for n in range(col_count):
             palette_out.write(f"\t{colors[n]},\n")
         palette_out.write("};")
+        palette_out.write(f"\n#endif")
 
     pix = im_quant.load()
     for k, v in sprites.items():

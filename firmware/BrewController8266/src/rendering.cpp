@@ -11,37 +11,7 @@
 #define COLOR_WHITE 0
 
 #include "xpm/palette.h"
-
-#include "xpm/fan_on.h"
-#include "xpm/fan_off.h"
-#include "xpm/fire_on.h"
-#include "xpm/fire_off.h"
-#include "xpm/font_0.h"
-#include "xpm/font_1.h"
-#include "xpm/font_2.h"
-#include "xpm/font_3.h"
-#include "xpm/font_4.h"
-#include "xpm/font_5.h"
-#include "xpm/font_6.h"
-#include "xpm/font_7.h"
-#include "xpm/font_8.h"
-#include "xpm/font_9.h"
-
-#include "xpm/min_label.h"
-#include "xpm/c_label.h"
-
-#include "xpm/clock_icon.h"
-#include "xpm/sensor_icon.h"
-#include "xpm/target_icon.h"
-
-#include "xpm/plus_up.h"
-#include "xpm/minus_up.h"
-#include "xpm/play_up.h"
-#include "xpm/pause_up.h"
-#include "xpm/plus_down.h"
-#include "xpm/minus_down.h"
-#include "xpm/play_down.h"
-#include "xpm/pause_down.h"
+#include "images.h"
 
 static const char* FONT_DATA[10] = {FONT_0_DATA, FONT_1_DATA, FONT_2_DATA, FONT_3_DATA, FONT_4_DATA, FONT_5_DATA, FONT_6_DATA, FONT_7_DATA, FONT_8_DATA, FONT_9_DATA};
 static const uint16_t FONT_WIDTH[10] = {FONT_0_WIDTH, FONT_1_WIDTH, FONT_2_WIDTH, FONT_3_WIDTH, FONT_4_WIDTH, FONT_5_WIDTH, FONT_6_WIDTH, FONT_7_WIDTH, FONT_8_WIDTH, FONT_9_WIDTH};
@@ -106,6 +76,7 @@ void drawClearScreen() {
 
   // controls
   drawControls(true);
+  drawIcons(false, false, true);
 }
 
 void drawControls(bool forceDraw) {
@@ -161,14 +132,19 @@ void drawTemperatur(float curTemp, float curTarget, bool bAnimation) {
     g_curTarget = (g_curTarget>99)?99:(g_curTarget<0)?0:g_curTarget;
     drawNumber(g_curTarget, 82, 138);
   }
+}
 
-  if (!bAnimation) {
-    drawXPM(49, 199, FAN_ON_WIDTH, FAN_ON_HEIGHT, FAN_ON_DATA);
-    drawXPM(51, 169, FIRE_OFF_WIDTH, FIRE_OFF_HEIGHT, FIRE_OFF_DATA);
-  } else {
-    drawXPM(49, 199, FAN_OFF_WIDTH, FAN_OFF_HEIGHT, FAN_OFF_DATA);
-    drawXPM(50, 169, FIRE_ON_WIDTH, FIRE_ON_HEIGHT, FIRE_ON_DATA);
-  }
+bool g_bCurHeater = false;
+bool g_bCurAgitator = false;
+void drawIcons(bool bHeater, bool bAgitator, bool forceDraw) {
+    if (bHeater != g_bCurHeater || forceDraw) {
+      drawXPM(51, 169, bHeater ? FIRE_ON_WIDTH : FIRE_OFF_WIDTH, bHeater ? FIRE_ON_HEIGHT : FIRE_OFF_HEIGHT, bHeater ? FIRE_ON_DATA : FIRE_OFF_DATA);
+      g_bCurHeater = bHeater;
+    }
+    if (bAgitator != g_bCurAgitator || forceDraw) {
+      drawXPM(51, 169, bAgitator ? FIRE_ON_WIDTH : FIRE_OFF_WIDTH, bAgitator ? FIRE_ON_HEIGHT : FIRE_OFF_HEIGHT, bAgitator ? FIRE_ON_DATA : FIRE_OFF_DATA);
+      g_bCurAgitator = bAgitator;
+    }
 }
 
 int g_curMin = -1;

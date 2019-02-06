@@ -1,7 +1,8 @@
 #ifndef _BUTTON_
 #define _BUTTON_
 
-typedef void (*callbackPtr)(int);
+class Button;
+typedef void (*eventCallbackPtr)(int, Button*);
 
 class Button {
   public:
@@ -10,8 +11,9 @@ class Button {
     void enable();
     void disable();
     void draw(bool forceDraw);
+    void setImages(const char *xpm_up, const char *xpm_down);
 
-    void registerCallbacks(callbackPtr pressed, callbackPtr released);
+    void registerCallbacks(eventCallbackPtr pressed, eventCallbackPtr released);
     bool verifyPressed(int x, int y);
     bool verifyReleased(int x, int y);
 
@@ -27,8 +29,8 @@ class Button {
     bool m_bIsPressedState;
     bool m_bDirty;
 
-    callbackPtr m_pFncPressed;
-    callbackPtr m_pFncReleased;
+    eventCallbackPtr m_pCallbackPressed;
+    eventCallbackPtr m_pCallbackReleased;
 };
 
 #endif

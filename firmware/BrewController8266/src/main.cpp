@@ -5,6 +5,7 @@
 #include <DallasTemperature.h>
 
 #include "settings.h"
+#include "images.h"
 #include "rendering.h"
 #include "touchscreen.h"
 
@@ -25,16 +26,70 @@ DallasTemperature DS18B20(&oneWire);
 ADC_MODE(ADC_VCC);
 
 // controler states
-uint8_t cntrl_wait_MS = 1000;
-uint8_t cntrl_last_update = 0;
-bool cntrl_ssr_state = false;
-float cntrl_water_temp = 0.f;
+static const int UPDATE_INTERVAL = 1000;
+uint16_t g_lastUpdate = 0;
+bool g_updateTick = false;
+
+bool g_bTimerEnabled = false;
+uint16_t g_targetTimeSeconds = 10*60;
+unsigned long g_timerStartMS = 0;
+
+bool g_bHeaterEnabled = false;
+bool g_bAgitatorEnabled = true;
+uint8_t g_targetTemperatur = 65;
+float g_currentTemperatur = 0;
+
 uint8_t g_rotation = 3;
 
-void callbackPressed(int id) {
+void callbackPressed(int id, Button *button) {
+  switch(id) {
+    case CNTL_TIME_PLUS: {
+      break;
+    }
+    case CNTL_TIME_MINUS: {
+      break;
+    }
+    case CNTL_TEMP_PLUS: {
+      break;
+    }
+    case CNTL_TEMP_MINUS: {
+      break;
+    }
+  }
 }
 
-void callbackReleased(int id) {
+void callbackReleased(int id, Button *button) {
+  switch(id) {
+    case CNTL_TIME_PLUS: {
+      g_targetTimeSeconds += 60;
+      break;
+    }
+    case CNTL_TIME_MINUS: {
+      g_targetTimeSeconds = (g_targetTimeSeconds > 60) ? g_targetTimeSeconds-60 : 0;
+      break;
+    }
+    case CNTL_TIMER: {
+      g_bTimerEnabled = !g_bTimerEnabled;
+      if (g_bTimerEnabled) {
+        g_timerStartMS = millis();
+        button->setImages(PAUSE_UP_DATA, PAUSE_DOWN_DATA);
+      } else {
+        button->setImages(PLAY_UP_DATA, PLAY_DOWN_DATA);
+      }
+      break;
+    }
+    case CNTL_TEMP_PLUS: {
+      g_targetTemperatur += 1;
+      break;
+    }
+    case CNTL_TEMP_MINUS: {
+      g_targetTemperatur = (g_targetTemperatur > 1) ? g_targetTemperatur-1 : 0;
+      break;
+    }
+    case CNTL_HEATER: {
+      break;
+    }
+  }
 }
 
 float getTemperature() {
@@ -50,7 +105,6 @@ float getTemperature() {
 
 void setup() {
   // Serial.begin(115200);
-
   pinMode(TFT_LED, OUTPUT);
   digitalWrite(TFT_LED, HIGH);
 
@@ -80,31 +134,32 @@ digitalWrite(BUZZER_PIN, LOW);
   drawClearScreen();
 }
 
-int time_sec = 0;
-
 void loop() {
   updateTouchScreen();
 
   // update control states
-  if (millis()-cntrl_last_update > cntrl_wait_MS) {
-    cntrl_water_temp = getTemperature();
-    cntrl_ssr_state = ! cntrl_ssr_state;
+  if ( (millis()-g_lastUpdate) > UPDATE_INTERVAL ) {
+    g_currentTemperatur = getTemperature();
+    g_updateTick = ! g_updateTick;
 #ifdef ENABLE_SSR
-    digitalWrite(SSR1_PIN, cntrl_ssr_state ? LOW : HIGH);
-    digitalWrite(SSR2_PIN, cntrl_ssr_state ? HIGH : LOW);
+    digitalWrite(SSR1_PIN, g_updateTick ? LOW : HIGH);
+    digitalWrite(SSR2_PIN, g_updateTick ? HIGH : LOW);
 #endif
 
 #ifdef ENABLE_BUZZER
-    digitalWrite(BUZZER_PIN, cntrl_ssr_state ? LOW : HIGH);
+    digitalWrite(BUZZER_PIN, g_updateTick ? LOW : HIGH);
 #endif
 
-    cntrl_last_update = millis();
-    time_sec++;
+    if (g_bTimerEnabled) {
+      g_targetTimeSeconds -= 1;
+    }
+    g_lastUpdate = millis();
   }
 
   // rendering
-  drawTimer((int)(time_sec/60.f), time_sec%60, cntrl_ssr_state);
-  drawTemperatur(cntrl_water_temp, 43.f, cntrl_ssr_state);
+  drawTimer((int)(g_targetTimeSeconds/60.f), g_targetTimeSeconds%60, g_updateTick);
+  drawTemperatur(g_currentTemperatur, (float)g_targetTemperatur, g_updateTick);
+  drawIcons(g_bHeaterEnabled, g_bAgitatorEnabled);
   drawControls();
   drawCommit();
 }

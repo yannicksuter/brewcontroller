@@ -1,3 +1,6 @@
+#ifndef PALETTE_H
+#define PALETTE_H
+
 static const uint16_t palette_len = 16;
 uint16_t palette[] = {
 	0xffff,
@@ -17,3 +20,4 @@ uint16_t palette[] = {
 	0xf000,
 	0x0,
 };
+#endif
