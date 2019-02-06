@@ -12,6 +12,7 @@ Button::Button(int x, int y, int width, int heigt, const char *xpm_up, const cha
   m_height = heigt;
   m_bEnabled = true;
   m_bStateUp = true;
+  m_bDirty = true;
 }
 
 void Button::enable() {
@@ -22,10 +23,22 @@ void Button::disable() {
   m_bEnabled = false;
 }
 
-void Button::draw() {
-  if (m_bEnabled && m_bStateUp) {
-    drawXPM(m_x, m_y, m_width, m_height, m_pXPM_Up);
-  } else {
-    drawXPM(m_x, m_y, m_width, m_height, m_pXPM_Down);
+void Button::draw(bool forceDraw) {
+  if (m_bDirty || forceDraw) {
+    if (m_bEnabled && m_bStateUp) {
+      drawXPM(m_x, m_y, m_width, m_height, m_pXPM_Up);
+    } else {
+      drawXPM(m_x, m_y, m_width, m_height, m_pXPM_Down);
+    }
+    m_bDirty = false;
   }
+}
+
+bool Button::isPressed(int x, int y) {
+ if (m_bEnabled && x >= m_x && x <= m_x+m_width && y >= m_y && y <= m_y+m_height) {
+    m_bStateUp = !m_bStateUp;
+    m_bDirty = true;
+    return true;
+ }
+ return false;
 }

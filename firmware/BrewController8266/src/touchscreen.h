@@ -33,5 +33,6 @@ class TouchControllerWS {
 
 #endif
 
+extern void setupTouchScreen(uint8_t rotation, bool forceCalibration=false);
 extern bool isTouched(int16_t debounceMillis);
 extern TS_Point getTouchPoint();

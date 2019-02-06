@@ -7,7 +7,9 @@ class Button {
 
     void enable();
     void disable();
-    void draw();
+    void draw(bool forceDraw);
+
+    bool isPressed(int x, int y);
 
   private:
     int m_x, m_y;
@@ -16,6 +18,7 @@ class Button {
     const char* m_pXPM_Down;
     bool m_bEnabled;
     bool m_bStateUp;
+    bool m_bDirty;
 };
 
 #endif

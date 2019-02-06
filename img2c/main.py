@@ -50,6 +50,10 @@ if __name__ == "__main__":
     for k, v in sprites.items():
         print(f'writting {k} sprite..')
         with open(f"{k}.h", "w+") as header_out:
+            # ifndef _RENDERINGH_
+            # define _RENDERINGH_
+            header_out.write(f"#ifndef {k.upper()}_H\n")
+            header_out.write(f"#define {k.upper()}_H\n\n")
             header_out.write(f"static const uint16_t {k.upper()}_WIDTH = {v['width']};\n")
             header_out.write(f"static const uint16_t {k.upper()}_HEIGHT = {v['height']};\n")
             header_out.write(f"static const char {k.upper()}_DATA[] PROGMEM = {{ ")
@@ -57,3 +61,4 @@ if __name__ == "__main__":
                 for x in range(0, v['width']):
                     header_out.write(f"{pix[v['x']+x, v['y']+y]},")
             header_out.write("};\n")
+            header_out.write(f"\n#endif")

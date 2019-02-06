@@ -1,4 +1,5 @@
 #include "settings.h"
+#include "rendering.h"
 
 #include <ILI9341_SPI.h>
 #include <MiniGrafx.h>
@@ -45,7 +46,6 @@
 static const char* FONT_DATA[10] = {FONT_0_DATA, FONT_1_DATA, FONT_2_DATA, FONT_3_DATA, FONT_4_DATA, FONT_5_DATA, FONT_6_DATA, FONT_7_DATA, FONT_8_DATA, FONT_9_DATA};
 static const uint16_t FONT_WIDTH[10] = {FONT_0_WIDTH, FONT_1_WIDTH, FONT_2_WIDTH, FONT_3_WIDTH, FONT_4_WIDTH, FONT_5_WIDTH, FONT_6_WIDTH, FONT_7_WIDTH, FONT_8_WIDTH, FONT_9_WIDTH};
 
-static const int CONTROL_COUNT = 6;
 Button controls[CONTROL_COUNT] = {
   Button(1, 17, PLUS_UP_WIDTH, PLUS_UP_HEIGHT, PLUS_UP_DATA, PLUS_DOWN_DATA),
   Button(1, 61, MINUS_UP_WIDTH, MINUS_UP_HEIGHT, MINUS_UP_DATA, MINUS_DOWN_DATA),
@@ -105,8 +105,12 @@ void drawClearScreen() {
   drawXPM(278, 205, C_LABEL_WIDTH, C_LABEL_HEIGHT, C_LABEL_DATA);
 
   // controls
+  drawControls(true);
+}
+
+void drawControls(bool forceDraw) {
   for (int i=0; i<CONTROL_COUNT; i++) {
-    controls[i].draw();
+    controls[i].draw(forceDraw);
   }
 }
 
@@ -185,12 +189,15 @@ void drawTimer(int min, int sec, bool bAnimation) {
 }
 
 void drawTouch(int x, int y) {
-  // gfx.setTextAlignment(TEXT_ALIGN_CENTER_BOTH);
-  // gfx.setColor(MINI_YELLOW);
-  // gfx.setFont(ArialMT_Plain_24);
-  //
-  // char tmp_str[180];
-  // sprintf(tmp_str, "Touch: %d/%d", x, y);
-  //
-  // gfx.drawString(center_width, center_height+24, tmp_str);
+  gfx.setColor(COLOR_BLACK);
+  gfx.fillRect(0, 0, 320, 10);
+
+  gfx.setTextAlignment(TEXT_ALIGN_LEFT);
+  gfx.setColor(COLOR_WHITE);
+  gfx.setFont(ArialMT_Plain_10);
+
+  char tmp_str[180];
+  sprintf(tmp_str, "Touch: %d/%d", x, y);
+
+  gfx.drawString(0, 0, tmp_str);
 }

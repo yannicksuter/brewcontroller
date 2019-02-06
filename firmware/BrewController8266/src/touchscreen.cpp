@@ -1,13 +1,17 @@
 #include "touchscreen.h"
 #include "rendering.h"
 
+const char *CALIBRATION_FILENAME = "/calibration.txt";
+
 XPT2046_Touchscreen ts(TOUCH_CS, TOUCH_IRQ);
 TouchControllerWS touchController(&ts);
 
-void setupTouchScreen() {
+void setupTouchScreen(uint8_t rotation, bool forceCalibration) {
   ts.begin();
+  ts.setRotation(rotation);
+
   boolean isCalibrationAvailable = touchController.loadCalibration();
-  if (!isCalibrationAvailable) {
+  if (!isCalibrationAvailable || forceCalibration) {
     Serial.println("Calibration not available");
     touchController.startCalibration();
     while (!touchController.isCalibrationFinished()) {
@@ -33,50 +37,44 @@ TouchControllerWS::TouchControllerWS(XPT2046_Touchscreen *touchScreen) {
 }
 
 bool TouchControllerWS::loadCalibration() {
-  // always use this to "mount" the filesystem
-  bool result = SPIFFS.begin();
-  Serial.println("SPIFFS opened: " + result);
+  if (SPIFFS.begin()) {
+    File f = SPIFFS.open(CALIBRATION_FILENAME, "r");
+    if (f) {
+        String dxStr = f.readStringUntil('\n');
+        String dyStr = f.readStringUntil('\n');
+        String axStr = f.readStringUntil('\n');
+        String ayStr = f.readStringUntil('\n');
+        dx = dxStr.toFloat();
+        dy = dyStr.toFloat();
+        ax = axStr.toInt();
+        ay = ayStr.toInt();
+        f.close();
+    }
+    SPIFFS.end();
 
-  // this opens the file "f.txt" in read-mode
-  File f = SPIFFS.open("/calibration.txt", "r");
-
-  if (!f) {
-    return false;
-  } else {
-      //Lets read line by line from the file
-      String dxStr = f.readStringUntil('\n');
-      String dyStr = f.readStringUntil('\n');
-      String axStr = f.readStringUntil('\n');
-      String ayStr = f.readStringUntil('\n');
-      dx = dxStr.toFloat();
-      dy = dyStr.toFloat();
-      ax = axStr.toInt();
-      ay = ayStr.toInt();
+    // configuration sanaty check
+    if (ax == 8191 && ay == 8191) {
+        return false;
+    }
+    return true;
   }
-  f.close();
-
-  // Serial.printf("%f %f %d %d\n", dx, dy, ax, ay);
-  if (ax == 8191 && ay == 8191) {
-      return false;
-  }
-  return true;
+  return false;
 }
 
 bool TouchControllerWS::saveCalibration() {
-  bool result = SPIFFS.begin();
-
-  // open the file in write mode
-  File f = SPIFFS.open("/calibration.txt", "w");
-  // if (!f) {
-  //   Serial.println("file creation failed");
-  // }
-  // now write two lines in key/value style with  end-of-line characters
-  f.println(dx);
-  f.println(dy);
-  f.println(ax);
-  f.println(ay);
-
-  f.close();
+  if(SPIFFS.begin()) {
+    File f = SPIFFS.open(CALIBRATION_FILENAME, "w");
+    if(f) {
+      f.println(dx);
+      f.println(dy);
+      f.println(ax);
+      f.println(ay);
+      f.close();
+    }
+    SPIFFS.end();
+    return true;
+  }
+  return false;
 }
 
 void TouchControllerWS::startCalibration() {
@@ -125,9 +123,9 @@ bool TouchControllerWS::isTouched(int16_t debounceMillis) {
 
 TS_Point TouchControllerWS::getPoint() {
     TS_Point p = touchScreen->getPoint();
-    int x = (p.y - ax) * dx;
-    int y = TFT_WIDTH - (p.x - ay) * dy;
-    p.x = x;
-    p.y = y;
+    int x = (p.x - ax) * dx;
+    int y = (p.y - ay) * dy;
+    p.x = TFT_WIDTH - x;
+    p.y = TFT_HEIGHT - y;
     return p;
 }

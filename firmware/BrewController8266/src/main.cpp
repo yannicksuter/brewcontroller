@@ -8,10 +8,6 @@
 #include "rendering.h"
 #include "touchscreen.h"
 
-extern void setupRendering(int rotation);
-extern void setupTouchScreen();
-extern void setupWifi();
-
 #define ENABLE_SSR
 #define ENABLE_TEMPERATUR
 // #define ENABLE_BUZZER
@@ -29,10 +25,12 @@ DallasTemperature DS18B20(&oneWire);
 ADC_MODE(ADC_VCC);
 
 // controler states
-unsigned long cntrl_wait_MS = 1000;
-unsigned long cntrl_last_update = 0;
+uint8_t cntrl_wait_MS = 1000;
+uint8_t cntrl_last_update = 0;
 bool cntrl_ssr_state = false;
 float cntrl_water_temp = 0.f;
+
+uint8_t g_rotation = 3;
 
 float getTemperature() {
   float tempC = 0.f;
@@ -46,7 +44,7 @@ float getTemperature() {
 }
 
 void setup() {
-  Serial.begin(115200);
+  // Serial.begin(115200);
 
   pinMode(TFT_LED, OUTPUT);
   digitalWrite(TFT_LED, HIGH);
@@ -66,15 +64,13 @@ digitalWrite(BUZZER_PIN, LOW);
   DS18B20.begin();
 #endif
 
-  setupRendering(3);
-  setupTouchScreen();
+  setupRendering(g_rotation);
+  setupTouchScreen(g_rotation, true);
 
   drawClearScreen();
 }
 
 int time_sec = 0;
-int last_x = 0;
-int last_y = 0;
 
 void loop() {
 
@@ -101,9 +97,11 @@ void loop() {
 
   if (isTouched(500)) {
     TS_Point p = getTouchPoint();
-    last_x = p.x;
-    last_y = p.y;
+    drawTouch(p.x, p.y);
+    for (int i=0; i<CONTROL_COUNT; i++) {
+      controls[i].isPressed(p.x, p.y);
+    }
+    drawControls();
   }
-  // drawTouch(last_x, last_y);
   drawCommit();
 }
