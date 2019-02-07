@@ -1,3 +1,6 @@
+#ifndef SETTINGS_H
+#define SETTINGS_H
+
 // ILI9341 hardware
 #define TFT_DC D2
 #define TFT_CS D1
@@ -12,10 +15,4 @@
 #define TFT_HEIGHT 240
 #define BITS_PER_PIXEL 4
 
-// controls
-#define CNTL_TIME_PLUS 0
-#define CNTL_TIME_MINUS 1
-#define CNTL_TIMER 2
-#define CNTL_TEMP_PLUS 3
-#define CNTL_TEMP_MINUS 4
-#define CNTL_HEATER 5
+#endif

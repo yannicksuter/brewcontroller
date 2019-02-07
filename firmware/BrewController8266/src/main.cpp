@@ -31,8 +31,7 @@ uint16_t g_lastUpdate = 0;
 bool g_updateTick = false;
 
 bool g_bTimerEnabled = false;
-uint16_t g_targetTimeSeconds = 10*60;
-unsigned long g_timerStartMS = 0;
+long g_targetTimeSeconds = 4*60;
 
 bool g_bHeaterEnabled = false;
 bool g_bAgitatorEnabled = true;
@@ -40,6 +39,12 @@ uint8_t g_targetTemperatur = 65;
 float g_currentTemperatur = 0;
 
 uint8_t g_rotation = 3;
+
+void disableTimer(long remainingSeconds) {
+  g_targetTimeSeconds = remainingSeconds;
+  g_bTimerEnabled = false;
+  controls[CNTL_TIMER].setToggleState(0);
+}
 
 void callbackPressed(int id, Button *button) {
   switch(id) {
@@ -65,17 +70,16 @@ void callbackReleased(int id, Button *button) {
       break;
     }
     case CNTL_TIME_MINUS: {
-      g_targetTimeSeconds = (g_targetTimeSeconds > 60) ? g_targetTimeSeconds-60 : 0;
+      if (g_targetTimeSeconds > 60) {
+        g_targetTimeSeconds -= 60;
+      } else {
+        disableTimer(0);
+      }
       break;
     }
     case CNTL_TIMER: {
       g_bTimerEnabled = !g_bTimerEnabled;
-      if (g_bTimerEnabled) {
-        g_timerStartMS = millis();
-        button->setImages(PAUSE_UP_DATA, PAUSE_DOWN_DATA);
-      } else {
-        button->setImages(PLAY_UP_DATA, PLAY_DOWN_DATA);
-      }
+      controls[CNTL_TIMER].setToggleState(g_bTimerEnabled ? TOGGLE_STATE_PAUSE : TOGGLE_STATE_PLAY);
       break;
     }
     case CNTL_TEMP_PLUS: {
@@ -87,6 +91,8 @@ void callbackReleased(int id, Button *button) {
       break;
     }
     case CNTL_HEATER: {
+      g_bHeaterEnabled = !g_bHeaterEnabled;
+      controls[CNTL_HEATER].setToggleState(g_bHeaterEnabled ? TOGGLE_STATE_PAUSE : TOGGLE_STATE_PLAY);
       break;
     }
   }
@@ -124,7 +130,7 @@ digitalWrite(BUZZER_PIN, LOW);
 #endif
 
   setupRendering(g_rotation);
-  setupTouchScreen(g_rotation, true);
+  setupTouchScreen(g_rotation, false);
 
   // register callbacks
   for (int i=0; i<CONTROL_COUNT; i++) {
@@ -152,12 +158,15 @@ void loop() {
 
     if (g_bTimerEnabled) {
       g_targetTimeSeconds -= 1;
+      if (g_targetTimeSeconds <= 0) {
+        disableTimer(0);
+      }
     }
     g_lastUpdate = millis();
   }
 
   // rendering
-  drawTimer((int)(g_targetTimeSeconds/60.f), g_targetTimeSeconds%60, g_updateTick);
+  drawTimer((int)(g_targetTimeSeconds/60.f), g_targetTimeSeconds%60, g_bTimerEnabled?g_updateTick:false);
   drawTemperatur(g_currentTemperatur, (float)g_targetTemperatur, g_updateTick);
   drawIcons(g_bHeaterEnabled, g_bAgitatorEnabled);
   drawControls();

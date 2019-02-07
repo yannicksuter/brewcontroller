@@ -51,7 +51,7 @@ if __name__ == "__main__":
 
     pix = im_quant.load()
     for k, v in sprites.items():
-        print(f'writting {k} sprite..')
+        print(f"writting {k} sprite.. {v['x']}:{v['y']} {v['width']}x{v['height']}")
         with open(f"{k}.h", "w+") as header_out:
             # ifndef _RENDERINGH_
             # define _RENDERINGH_
@@ -63,5 +63,6 @@ if __name__ == "__main__":
             for y in range(0, v['height']):
                 for x in range(0, v['width']):
                     header_out.write(f"{pix[v['x']+x, v['y']+y]},")
+                header_out.write('\n')
             header_out.write("};\n")
             header_out.write(f"\n#endif")
