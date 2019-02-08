@@ -31,12 +31,12 @@ void updateTouchScreen(long timestamp) {
     g_bTouched = true;
     g_pLastPointTouched = touchController.getPoint();
     for (int i=0; i<CONTROL_COUNT; i++) {
-      controls[i].verifyPressed(g_pLastPointTouched.x, g_pLastPointTouched.y, timestamp);
+      controls[i]->verifyPressed(g_pLastPointTouched.x, g_pLastPointTouched.y, timestamp);
     }
   } else {
     if (g_bTouched) {
       for (int i=0; i<CONTROL_COUNT; i++) {
-        controls[i].verifyReleased(g_pLastPointTouched.x, g_pLastPointTouched.y, timestamp);
+        controls[i]->verifyReleased(g_pLastPointTouched.x, g_pLastPointTouched.y, timestamp);
       }
     }
     g_bTouched = false;

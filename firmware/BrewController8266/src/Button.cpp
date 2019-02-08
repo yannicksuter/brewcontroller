@@ -3,19 +3,25 @@
 
 extern void drawXPM(int16_t pos_x, int16_t pos_y, int16_t width, int16_t height, const char *xpm);
 
-Button::Button(int id, int x, int y, int width, int heigt, const char *state1_up, const char *state1_down):
-  Button(id, x, y, width, heigt, state1_up, state1_down, NULL, NULL)
+Button::Button(int id, int x, int y, int width, int height):
+  Button(id, x, y, width, height, NULL, NULL, NULL, NULL)
 {
   m_bToggleButton = false;
 }
 
-Button::Button(int id, int x, int y, int width, int heigt, const char *state1_up, const char *state1_down, const char *state2_up, const char *state2_down)
+Button::Button(int id, int x, int y, int width, int height, const char *state1_up, const char *state1_down):
+  Button(id, x, y, width, height, state1_up, state1_down, NULL, NULL)
+{
+  m_bToggleButton = false;
+}
+
+Button::Button(int id, int x, int y, int width, int height, const char *state1_up, const char *state1_down, const char *state2_up, const char *state2_down)
 {
   m_id = id;
   m_x = x;
   m_y = y;
   m_width = width;
-  m_height = heigt;
+  m_height = height;
   m_bEnabled = true;
   m_bIsPressedState = false;
   m_bDirty = true;

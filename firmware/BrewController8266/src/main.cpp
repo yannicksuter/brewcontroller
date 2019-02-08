@@ -46,7 +46,7 @@ uint8_t g_rotation = 3;
 void disableTimer(long remainingSeconds) {
   g_targetTimeSeconds = remainingSeconds;
   g_bTimerEnabled = false;
-  controls[CNTL_TIMER].setToggleState(0);
+  controls[CNTL_TIMER]->setToggleState(0);
 }
 
 void callbackLongPressed(int id, Button *src) {
@@ -88,7 +88,7 @@ void callbackReleased(int id, Button *src) {
     }
     case CNTL_TIMER: {
       g_bTimerEnabled = !g_bTimerEnabled;
-      controls[CNTL_TIMER].setToggleState(g_bTimerEnabled ? TOGGLE_STATE_PAUSE : TOGGLE_STATE_PLAY);
+      controls[CNTL_TIMER]->setToggleState(g_bTimerEnabled ? TOGGLE_STATE_PAUSE : TOGGLE_STATE_PLAY);
       break;
     }
     case CNTL_TEMP_PLUS: {
@@ -101,7 +101,7 @@ void callbackReleased(int id, Button *src) {
     }
     case CNTL_HEATER: {
       g_bHeaterEnabled = !g_bHeaterEnabled;
-      controls[CNTL_HEATER].setToggleState(g_bHeaterEnabled ? TOGGLE_STATE_PAUSE : TOGGLE_STATE_PLAY);
+      controls[CNTL_HEATER]->setToggleState(g_bHeaterEnabled ? TOGGLE_STATE_PAUSE : TOGGLE_STATE_PLAY);
       break;
     }
   }
@@ -143,8 +143,8 @@ digitalWrite(BUZZER_PIN, LOW);
 
   // register callbacks
   for (int i=0; i<CONTROL_COUNT; i++) {
-    controls[i].registerReleaseCallback(callbackReleased);
-    controls[i].registerLongPressCallback(callbackLongPressed);
+    controls[i]->registerReleaseCallback(callbackReleased);
+    controls[i]->registerLongPressCallback(callbackLongPressed);
   }
 
   drawClearScreen();

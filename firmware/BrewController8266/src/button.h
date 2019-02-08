@@ -8,12 +8,13 @@ typedef void (*eventCallbackPtr)(int, Button*);
 
 class Button {
   public:
-    Button(int id, int x, int y, int width, int heigt, const char *xpm_up, const char *xpm_down);
-    Button(int id, int x, int y, int width, int heigt, const char *xpm_up_state1, const char *xpm_down_state1, const char *xpm_up_state2, const char *xpm_down_state2);
+    Button(int id, int x, int y, int width, int height);
+    Button(int id, int x, int y, int width, int height, const char *xpm_up, const char *xpm_down);
+    Button(int id, int x, int y, int width, int height, const char *xpm_up_state1, const char *xpm_down_state1, const char *xpm_up_state2, const char *xpm_down_state2);
 
     void enable();
     void disable();
-    void draw(bool forceDraw);
+    virtual void draw(bool forceDraw);
 
     void setToggleState(uint8_t state);
 
@@ -26,7 +27,7 @@ class Button {
     bool verifyPressed(int x, int y, long timestamp);
     bool verifyReleased(int x, int y, long timestamp);
 
-  private:
+  protected:
     void changeState(bool bIsPressed, long timestamp);
 
     int m_id;

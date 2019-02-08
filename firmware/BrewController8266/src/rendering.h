@@ -2,7 +2,14 @@
 #define RENDERING_H
 
 #include <Arduino.h>
+#include <MiniGrafx.h>
+
 #include "button.h"
+#include "tabbutton.h"
+
+#define COLOR_BLACK 15
+#define COLOR_GREY 10
+#define COLOR_WHITE 0
 
 extern void setupRendering(int rotation);
 
@@ -25,6 +32,7 @@ enum CONTROLS_ID {
   CNTL_TEMP_PLUS,
   CNTL_TEMP_MINUS,
   CNTL_HEATER,
+  CNTL_TAB
 };
 
 enum TOGGLE_STATE {
@@ -32,7 +40,8 @@ enum TOGGLE_STATE {
   TOGGLE_STATE_PAUSE
 };
 
-static const int CONTROL_COUNT = 6;
-extern Button controls[CONTROL_COUNT];
+static const int CONTROL_COUNT = 7;
+extern Button* controls[CONTROL_COUNT];
+extern MiniGrafx gfx;
 
 #endif
