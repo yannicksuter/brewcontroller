@@ -1,6 +1,8 @@
 #ifndef _BUTTON_
 #define _BUTTON_
 
+#define BUTTON_LONG_PRESS_DELAY 2000
+
 class Button;
 typedef void (*eventCallbackPtr)(int, Button*);
 
@@ -15,12 +17,17 @@ class Button {
 
     void setToggleState(uint8_t state);
 
-    void registerCallbacks(eventCallbackPtr pressed, eventCallbackPtr released);
-    bool verifyPressed(int x, int y);
-    bool verifyReleased(int x, int y);
+    inline long getLongPressCounter() { return m_nLongPressCounter; }
+
+    inline void registerPressCallback(eventCallbackPtr pPressedCB) { m_pCallbackPressed = pPressedCB; };
+    inline void registerLongPressCallback(eventCallbackPtr pLongPressedCB) { m_pCallbackLongPressed = pLongPressedCB; };
+    inline void registerReleaseCallback(eventCallbackPtr pReleasedCB) { m_pCallbackReleased = pReleasedCB; };
+
+    bool verifyPressed(int x, int y, long timestamp);
+    bool verifyReleased(int x, int y, long timestamp);
 
   private:
-    void changeState(bool bPressed);
+    void changeState(bool bIsPressed, long timestamp);
 
     int m_id;
     int m_x, m_y;
@@ -30,13 +37,16 @@ class Button {
     uint8_t m_nToggleButtonState;
     const char* m_pStateImagesUp[2];
     const char* m_pStateImagesDown[2];
-    // const char* m_pXPM_Up;
-    // const char* m_pXPM_Down;
+
     bool m_bEnabled;
     bool m_bIsPressedState;
     bool m_bDirty;
 
+    long m_nLongPressStartTime;
+    long m_nLongPressCounter;
+
     eventCallbackPtr m_pCallbackPressed;
+    eventCallbackPtr m_pCallbackLongPressed;
     eventCallbackPtr m_pCallbackReleased;
 };
 

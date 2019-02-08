@@ -16,7 +16,7 @@ class TouchControllerWS {
     void continueCalibration();
     bool isCalibrationFinished();
     bool isTouched();
-    bool isTouched(uint16_t debounceMillis);
+    // bool isTouched(uint16_t debounceMillis);
     TS_Point getPoint();
 
   private:
@@ -34,7 +34,7 @@ class TouchControllerWS {
 #endif
 
 extern void setupTouchScreen(uint8_t rotation, bool forceCalibration=false);
-extern void updateTouchScreen();
+extern void updateTouchScreen(long timestamp);
 
-extern bool isTouched(int16_t debounceMillis);
+// extern bool isTouched(int16_t debounceMillis);
 extern TS_Point getTouchPoint();

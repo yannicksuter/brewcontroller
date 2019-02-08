@@ -1,10 +1,10 @@
 #include <Arduino.h>
 #include "button.h"
-// #include "rendering.h"
+
 extern void drawXPM(int16_t pos_x, int16_t pos_y, int16_t width, int16_t height, const char *xpm);
 
-Button::Button(int id, int x, int y, int width, int heigt, const char *xpm_up, const char *xpm_down):
-  Button(id, x, y, width, heigt, xpm_up, xpm_down, NULL, NULL)
+Button::Button(int id, int x, int y, int width, int heigt, const char *state1_up, const char *state1_down):
+  Button(id, x, y, width, heigt, state1_up, state1_down, NULL, NULL)
 {
   m_bToggleButton = false;
 }
@@ -21,6 +21,7 @@ Button::Button(int id, int x, int y, int width, int heigt, const char *state1_up
   m_bDirty = true;
   m_pCallbackPressed = NULL;
   m_pCallbackReleased = NULL;
+  m_pCallbackLongPressed = NULL;
 
   m_bToggleButton = true;
   m_nToggleButtonState = 0;
@@ -56,34 +57,39 @@ void Button::draw(bool forceDraw) {
   }
 }
 
-void Button::changeState(bool bPressed) {
-  m_bDirty = (m_bIsPressedState != bPressed);
-  m_bIsPressedState = bPressed;
+void Button::changeState(bool bIsPressed, long timestamp) {
+  m_bDirty = (m_bIsPressedState != bIsPressed);
+
+  // if new press state, we have to reset long press counter
+  if (bIsPressed && !m_bIsPressedState) {
+    m_nLongPressStartTime = timestamp;
+    m_nLongPressCounter = 0;
+  }
+
+  m_bIsPressedState = bIsPressed;
 }
 
-void Button::registerCallbacks(eventCallbackPtr pressed, eventCallbackPtr released) {
-  m_pCallbackPressed = pressed;
-  m_pCallbackReleased = released;
-}
-
-bool Button::verifyPressed(int x, int y) {
- if (m_bEnabled && x >= m_x && x <= m_x+m_width && y >= m_y && y <= m_y+m_height) {
+bool Button::verifyPressed(int x, int y, long timestamp) {
+  if (m_bEnabled && x >= m_x && x <= m_x+m_width && y >= m_y && y <= m_y+m_height) {
+    changeState(true, timestamp);
     if (m_pCallbackPressed) {
       m_pCallbackPressed(m_id, this);
     }
-    changeState(true);
+    if ((timestamp-m_nLongPressStartTime) > BUTTON_LONG_PRESS_DELAY && m_pCallbackLongPressed) {
+      m_pCallbackLongPressed(m_id, this);
+    }
     return true;
- }
- changeState(false);
- return false;
+  }
+  changeState(false, timestamp);
+  return false;
 }
 
-bool Button::verifyReleased(int x, int y) {
+bool Button::verifyReleased(int x, int y, long timestamp) {
  if (m_bEnabled && x >= m_x && x <= m_x+m_width && y >= m_y && y <= m_y+m_height) {
    if (m_pCallbackReleased) {
      m_pCallbackReleased(m_id, this);
    }
-   changeState(false);
+   changeState(false, timestamp);
     return true;
  }
  return false;

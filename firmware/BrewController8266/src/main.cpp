@@ -9,6 +9,8 @@
 #include "rendering.h"
 #include "touchscreen.h"
 
+#define DEFAULT_TIME_SEC 4*60
+
 #define ENABLE_SSR
 #define ENABLE_TEMPERATUR
 // #define ENABLE_BUZZER
@@ -27,11 +29,12 @@ ADC_MODE(ADC_VCC);
 
 // controler states
 static const int UPDATE_INTERVAL = 1000;
-uint16_t g_lastUpdate = 0;
-bool g_updateTick = false;
+static long g_curTimestamp;
+static long g_lastUpdate = 0;
+static bool g_updateTick = false;
 
 bool g_bTimerEnabled = false;
-long g_targetTimeSeconds = 4*60;
+long g_targetTimeSeconds = DEFAULT_TIME_SEC;
 
 bool g_bHeaterEnabled = false;
 bool g_bAgitatorEnabled = true;
@@ -46,12 +49,18 @@ void disableTimer(long remainingSeconds) {
   controls[CNTL_TIMER].setToggleState(0);
 }
 
-void callbackPressed(int id, Button *button) {
+void callbackLongPressed(int id, Button *src) {
   switch(id) {
     case CNTL_TIME_PLUS: {
       break;
     }
     case CNTL_TIME_MINUS: {
+      break;
+    }
+    case CNTL_TIMER: {
+      if (src->getLongPressCounter() == 0) {
+        disableTimer(DEFAULT_TIME_SEC);
+      }
       break;
     }
     case CNTL_TEMP_PLUS: {
@@ -63,7 +72,7 @@ void callbackPressed(int id, Button *button) {
   }
 }
 
-void callbackReleased(int id, Button *button) {
+void callbackReleased(int id, Button *src) {
   switch(id) {
     case CNTL_TIME_PLUS: {
       g_targetTimeSeconds += 60;
@@ -134,17 +143,19 @@ digitalWrite(BUZZER_PIN, LOW);
 
   // register callbacks
   for (int i=0; i<CONTROL_COUNT; i++) {
-    controls[i].registerCallbacks(callbackPressed, callbackReleased);
+    controls[i].registerReleaseCallback(callbackReleased);
+    controls[i].registerLongPressCallback(callbackLongPressed);
   }
 
   drawClearScreen();
 }
 
 void loop() {
-  updateTouchScreen();
+  g_curTimestamp = millis();
+  updateTouchScreen(g_curTimestamp);
 
   // update control states
-  if ( (millis()-g_lastUpdate) > UPDATE_INTERVAL ) {
+  if ( (g_curTimestamp-g_lastUpdate) > UPDATE_INTERVAL ) {
     g_currentTemperatur = getTemperature();
     g_updateTick = ! g_updateTick;
 #ifdef ENABLE_SSR
@@ -162,7 +173,7 @@ void loop() {
         disableTimer(0);
       }
     }
-    g_lastUpdate = millis();
+    g_lastUpdate = g_curTimestamp;
   }
 
   // rendering

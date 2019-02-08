@@ -26,26 +26,26 @@ void setupTouchScreen(uint8_t rotation, bool forceCalibration) {
 
 bool g_bTouched = false;
 TS_Point g_pLastPointTouched;
-void updateTouchScreen() {
+void updateTouchScreen(long timestamp) {
   if (touchController.isTouched()) {
     g_bTouched = true;
     g_pLastPointTouched = touchController.getPoint();
     for (int i=0; i<CONTROL_COUNT; i++) {
-      controls[i].verifyPressed(g_pLastPointTouched.x, g_pLastPointTouched.y);
+      controls[i].verifyPressed(g_pLastPointTouched.x, g_pLastPointTouched.y, timestamp);
     }
   } else {
     if (g_bTouched) {
       for (int i=0; i<CONTROL_COUNT; i++) {
-        controls[i].verifyReleased(g_pLastPointTouched.x, g_pLastPointTouched.y);
+        controls[i].verifyReleased(g_pLastPointTouched.x, g_pLastPointTouched.y, timestamp);
       }
     }
     g_bTouched = false;
   }
 }
 
-bool isTouched(int16_t debounceMillis) {
-  return touchController.isTouched(debounceMillis);
-}
+// bool isTouched(int16_t debounceMillis) {
+//   return touchController.isTouched(debounceMillis);
+// }
 
 TS_Point getTouchPoint() {
   return touchController.getPoint();
@@ -132,13 +132,13 @@ bool TouchControllerWS::isTouched() {
   return touchScreen->touched();
 }
 
-bool TouchControllerWS::isTouched(uint16_t debounceMillis) {
-  if (touchScreen->touched() && millis() - m_lastTouched > debounceMillis) {
-    m_lastTouched = millis();
-    return true;
-  }
-  return false;
-}
+// bool TouchControllerWS::isTouched(uint16_t debounceMillis) {
+//   if (touchScreen->touched() && millis() - m_lastTouched > debounceMillis) {
+//     m_lastTouched = millis();
+//     return true;
+//   }
+//   return false;
+// }
 
 TS_Point TouchControllerWS::getPoint() {
     TS_Point p = touchScreen->getPoint();
