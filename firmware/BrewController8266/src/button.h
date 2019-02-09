@@ -1,7 +1,7 @@
 #ifndef _BUTTON_
 #define _BUTTON_
 
-#define BUTTON_LONG_PRESS_DELAY 2000
+#define BUTTON_LONG_PRESS_DELAY 3000
 
 class Button;
 typedef void (*eventCallbackPtr)(int, Button*);
@@ -24,8 +24,8 @@ class Button {
     inline void registerLongPressCallback(eventCallbackPtr pLongPressedCB) { m_pCallbackLongPressed = pLongPressedCB; };
     inline void registerReleaseCallback(eventCallbackPtr pReleasedCB) { m_pCallbackReleased = pReleasedCB; };
 
-    bool verifyPressed(int x, int y, long timestamp);
-    bool verifyReleased(int x, int y, long timestamp);
+    virtual bool verifyPressed(int x, int y, long timestamp);
+    virtual bool verifyReleased(int x, int y, long timestamp);
 
   protected:
     void changeState(bool bIsPressed, long timestamp);

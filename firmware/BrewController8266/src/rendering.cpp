@@ -18,7 +18,8 @@ Button* controls[CONTROL_COUNT] = {
   new Button(CNTL_TEMP_PLUS, 1, 148, PLUS_UP_WIDTH, PLUS_UP_HEIGHT, PLUS_UP_DATA, PLUS_DOWN_DATA),
   new Button(CNTL_TEMP_MINUS, 1, 192, MINUS_UP_WIDTH, MINUS_UP_HEIGHT, MINUS_UP_DATA, MINUS_DOWN_DATA),
   new Button(CNTL_HEATER, 278, 148, PLAY_UP_WIDTH, PLAY_UP_HEIGHT, PLAY_UP_DATA, PLAY_DOWN_DATA, PAUSE_UP_DATA, PAUSE_DOWN_DATA),
-  new TabButton(CNTL_TAB, 0, 0, 320, 16, 2)
+  new TabButton(CNTL_TAB, 0, 0, 320, 16, NUM_TABS),
+  new Button(CNTL_AGITATOR, 51, 209, FAN_ON_WIDTH, FAN_ON_HEIGHT, FAN_OFF_DATA, FAN_OFF_DATA, FAN_ON_DATA, FAN_OFF_DATA),
 };
 
 ILI9341_SPI tft = ILI9341_SPI(TFT_CS, TFT_DC);
@@ -151,15 +152,10 @@ void drawTemperatur(float curTemp, float curTarget, bool bAnimation) {
 }
 
 bool g_bCurHeater = false;
-bool g_bCurAgitator = false;
 void drawIcons(bool bHeater, bool bAgitator, bool forceDraw) {
     if (bHeater != g_bCurHeater || forceDraw) {
       drawXPM(51, 179, bHeater ? FIRE_ON_WIDTH : FIRE_OFF_WIDTH, bHeater ? FIRE_ON_HEIGHT : FIRE_OFF_HEIGHT, bHeater ? FIRE_ON_DATA : FIRE_OFF_DATA);
       g_bCurHeater = bHeater;
-    }
-    if (bAgitator != g_bCurAgitator || forceDraw) {
-      drawXPM(51, 209, bAgitator ? FAN_ON_WIDTH : FAN_OFF_WIDTH, bAgitator ? FAN_ON_HEIGHT : FAN_OFF_HEIGHT, bAgitator ? FAN_ON_DATA : FAN_OFF_DATA);
-      g_bCurAgitator = bAgitator;
     }
 }
 

@@ -9,10 +9,8 @@
 #include "rendering.h"
 #include "touchscreen.h"
 
-#define DEFAULT_TIME_SEC 4*60
-
 #define ENABLE_SSR
-#define ENABLE_TEMPERATUR
+// #define ENABLE_TEMPERATUR
 // #define ENABLE_BUZZER
 
 #define SSR1_PIN 1
@@ -38,10 +36,41 @@ long g_targetTimeSeconds = DEFAULT_TIME_SEC;
 
 bool g_bHeaterEnabled = false;
 bool g_bAgitatorEnabled = true;
-uint8_t g_targetTemperatur = 65;
+uint8_t g_targetTemperatur = DEFAULT_TEMPERATUR;
 float g_currentTemperatur = 0;
 
 uint8_t g_rotation = 3;
+
+const char *TABCONFIG_FILENAME = "/tabconfigs";
+
+void loadConfig(int id) {
+  if (SPIFFS.begin()) {
+    File f = SPIFFS.open(String(TABCONFIG_FILENAME) + id, "r");
+    if (f) {
+      String time = f.readStringUntil('\n');
+      String targetTemp = f.readStringUntil('\n');
+      g_targetTimeSeconds = time.toInt();
+      g_targetTemperatur = time.toInt();
+      f.close();
+    } else {
+      g_targetTimeSeconds = DEFAULT_TIME_SEC;
+      g_targetTemperatur = DEFAULT_TEMPERATUR;
+    }
+    SPIFFS.end();
+  }
+}
+
+void saveConfig(int id) {
+  if (SPIFFS.begin()) {
+    File f = SPIFFS.open(String(TABCONFIG_FILENAME) + id, "w");
+    if (f) {
+      f.println(g_targetTimeSeconds);
+      f.println(g_targetTemperatur);
+      f.close();
+    }
+    SPIFFS.end();
+  }
+}
 
 void disableTimer(long remainingSeconds) {
   g_targetTimeSeconds = remainingSeconds;

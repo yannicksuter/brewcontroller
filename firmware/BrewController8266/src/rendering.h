@@ -32,7 +32,8 @@ enum CONTROLS_ID {
   CNTL_TEMP_PLUS,
   CNTL_TEMP_MINUS,
   CNTL_HEATER,
-  CNTL_TAB
+  CNTL_TAB,
+  CNTL_AGITATOR
 };
 
 enum TOGGLE_STATE {
@@ -40,7 +41,7 @@ enum TOGGLE_STATE {
   TOGGLE_STATE_PAUSE
 };
 
-static const int CONTROL_COUNT = 7;
+static const int CONTROL_COUNT = 8;
 extern Button* controls[CONTROL_COUNT];
 extern MiniGrafx gfx;
 

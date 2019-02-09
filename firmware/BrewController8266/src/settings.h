@@ -15,4 +15,9 @@
 #define TFT_HEIGHT 240
 #define BITS_PER_PIXEL 4
 
+#define NUM_TABS 4
+
+#define DEFAULT_TIME_SEC 4*60
+#define DEFAULT_TEMPERATUR 65
+
 #endif
