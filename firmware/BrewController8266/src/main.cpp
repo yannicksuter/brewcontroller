@@ -27,6 +27,9 @@ ADC_MODE(ADC_VCC);
 
 // controler states
 static const int UPDATE_INTERVAL = 1000;
+static const int UI_ROTATION = 3;
+
+static int g_nCurTab = 0;
 static long g_curTimestamp;
 static long g_lastUpdate = 0;
 static bool g_updateTick = false;
@@ -38,8 +41,6 @@ bool g_bHeaterEnabled = false;
 bool g_bAgitatorEnabled = true;
 uint8_t g_targetTemperatur = DEFAULT_TEMPERATUR;
 float g_currentTemperatur = 0;
-
-uint8_t g_rotation = 3;
 
 const char *TABCONFIG_FILENAME = "/tabconfigs";
 
@@ -81,9 +82,19 @@ void disableTimer(long remainingSeconds) {
 void callbackLongPressed(int id, Button *src) {
   switch(id) {
     case CNTL_TIME_PLUS: {
+      if (src->getLongPressCounter()%2 == 0) {
+        g_targetTimeSeconds += 60;
+      }
       break;
     }
     case CNTL_TIME_MINUS: {
+      if (src->getLongPressCounter()%2 == 0) {
+        if (g_targetTimeSeconds > 60) {
+          g_targetTimeSeconds -= 60;
+        } else {
+          disableTimer(0);
+        }
+      }
       break;
     }
     case CNTL_TIMER: {
@@ -93,9 +104,19 @@ void callbackLongPressed(int id, Button *src) {
       break;
     }
     case CNTL_TEMP_PLUS: {
+      if (src->getLongPressCounter()%2 == 0) {
+        g_targetTemperatur += 1;
+      }
       break;
     }
     case CNTL_TEMP_MINUS: {
+      if (src->getLongPressCounter()%2 == 0) {
+        g_targetTemperatur = (g_targetTemperatur > 1) ? g_targetTemperatur-1 : 0;
+      }
+      break;
+    }
+    case CNTL_TAB: {
+      saveConfig(((TabButton*)src)->getCurTab());
       break;
     }
   }
@@ -133,6 +154,18 @@ void callbackReleased(int id, Button *src) {
       controls[CNTL_HEATER]->setToggleState(g_bHeaterEnabled ? TOGGLE_STATE_PAUSE : TOGGLE_STATE_PLAY);
       break;
     }
+    case CNTL_AGITATOR: {
+      g_bAgitatorEnabled = !g_bAgitatorEnabled;
+      break;
+    }
+    case CNTL_TAB: {
+      int tab = ((TabButton*)src)->getCurTab();
+      if (g_nCurTab != tab) {
+        g_nCurTab = tab;
+        loadConfig(g_nCurTab);
+      }
+      break;
+    }
   }
 }
 
@@ -167,8 +200,9 @@ digitalWrite(BUZZER_PIN, LOW);
   DS18B20.begin();
 #endif
 
-  setupRendering(g_rotation);
-  setupTouchScreen(g_rotation, false);
+  loadConfig(g_nCurTab);
+  setupRendering(UI_ROTATION);
+  setupTouchScreen(UI_ROTATION, false);
 
   // register callbacks
   for (int i=0; i<CONTROL_COUNT; i++) {
