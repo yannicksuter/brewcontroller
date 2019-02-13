@@ -77,6 +77,17 @@ void disableTimer(long remainingSeconds) {
   g_targetTimeSeconds = remainingSeconds;
   g_bTimerEnabled = false;
   controls[CNTL_TIMER]->setToggleState(0);
+
+  if (remainingSeconds == 0) {
+#ifdef ENABLE_BUZZER
+    for (int i=0; i<4; i++) {
+      digitalWrite(BUZZER_PIN, HIGH);
+      sleep(300);
+      digitalWrite(BUZZER_PIN, LOW);
+      sleep(200);
+    }
+#endif
+  }
 }
 
 void callbackLongPressed(int id, Button *src) {
@@ -221,13 +232,10 @@ void loop() {
   if ( (g_curTimestamp-g_lastUpdate) > UPDATE_INTERVAL ) {
     g_currentTemperatur = getTemperature();
     g_updateTick = ! g_updateTick;
-#ifdef ENABLE_SSR
-    digitalWrite(SSR1_PIN, g_updateTick ? LOW : HIGH);
-    digitalWrite(SSR2_PIN, g_updateTick ? HIGH : LOW);
-#endif
 
-#ifdef ENABLE_BUZZER
-    digitalWrite(BUZZER_PIN, g_updateTick ? LOW : HIGH);
+#ifdef ENABLE_SSR
+    digitalWrite(SSR1_PIN, g_bHeaterEnabled && (g_currentTemperatur < g_targetTemperatur) ? HIGH : LOW);
+    digitalWrite(SSR2_PIN, g_bAgitatorEnabled ? HIGH : LOW);
 #endif
 
     if (g_bTimerEnabled) {
