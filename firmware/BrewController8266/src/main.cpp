@@ -11,10 +11,10 @@
 
 #define ENABLE_SSR
 // #define ENABLE_TEMPERATUR
-// #define ENABLE_BUZZER
+#define ENABLE_BUZZER
 
-#define SSR1_PIN 1
-#define SSR2_PIN 3
+#define SSR_AGITATOR_PIN 1
+#define SSR_HEATER_PIN 3
 #define TEMP_PIN 10
 #define BUZZER_PIN 9
 
@@ -44,6 +44,8 @@ float g_currentTemperatur = 0;
 
 const char *TABCONFIG_FILENAME = "/tabconfigs";
 
+int g_loadedTime = 0;
+int g_loadedTemp = 0;
 void loadConfig(int id) {
   if (SPIFFS.begin()) {
     File f = SPIFFS.open(String(TABCONFIG_FILENAME) + id, "r");
@@ -51,8 +53,10 @@ void loadConfig(int id) {
       String time = f.readStringUntil('\n');
       String targetTemp = f.readStringUntil('\n');
       g_targetTimeSeconds = time.toInt();
-      g_targetTemperatur = time.toInt();
+      g_targetTemperatur = targetTemp.toInt();
       f.close();
+      g_loadedTime = g_targetTimeSeconds;
+      g_loadedTemp = g_targetTemperatur;
     } else {
       g_targetTimeSeconds = DEFAULT_TIME_SEC;
       g_targetTemperatur = DEFAULT_TEMPERATUR;
@@ -62,12 +66,18 @@ void loadConfig(int id) {
 }
 
 void saveConfig(int id) {
-  if (SPIFFS.begin()) {
+  // only save if config changed
+  if ((g_loadedTime != g_targetTimeSeconds || g_loadedTemp != g_targetTemperatur) && SPIFFS.begin()) {
     File f = SPIFFS.open(String(TABCONFIG_FILENAME) + id, "w");
     if (f) {
       f.println(g_targetTimeSeconds);
       f.println(g_targetTemperatur);
       f.close();
+#ifdef ENABLE_BUZZER
+      digitalWrite(BUZZER_PIN, HIGH);
+      delay(100);
+      digitalWrite(BUZZER_PIN, LOW);
+#endif
     }
     SPIFFS.end();
   }
@@ -82,9 +92,9 @@ void disableTimer(long remainingSeconds) {
 #ifdef ENABLE_BUZZER
     for (int i=0; i<4; i++) {
       digitalWrite(BUZZER_PIN, HIGH);
-      sleep(300);
+      delay(100);
       digitalWrite(BUZZER_PIN, LOW);
-      sleep(200);
+      delay(100);
     }
 #endif
   }
@@ -167,6 +177,7 @@ void callbackReleased(int id, Button *src) {
     }
     case CNTL_AGITATOR: {
       g_bAgitatorEnabled = !g_bAgitatorEnabled;
+      controls[CNTL_AGITATOR]->setToggleState(g_bAgitatorEnabled ? TOGGLE_STATE_PAUSE : TOGGLE_STATE_PLAY);
       break;
     }
     case CNTL_TAB: {
@@ -198,10 +209,10 @@ void setup() {
 
   // SSR, TEMP setup
 #ifdef ENABLE_SSR
-  pinMode(SSR1_PIN, OUTPUT);
-  digitalWrite(SSR1_PIN, LOW);
-  pinMode(SSR2_PIN, OUTPUT);
-  digitalWrite(SSR2_PIN, LOW);
+  pinMode(SSR_HEATER_PIN, OUTPUT);
+  digitalWrite(SSR_HEATER_PIN, LOW);
+  pinMode(SSR_AGITATOR_PIN, OUTPUT);
+  digitalWrite(SSR_AGITATOR_PIN, LOW);
 #endif
 
 pinMode(BUZZER_PIN, OUTPUT);
@@ -220,6 +231,7 @@ digitalWrite(BUZZER_PIN, LOW);
     controls[i]->registerReleaseCallback(callbackReleased);
     controls[i]->registerLongPressCallback(callbackLongPressed);
   }
+  controls[CNTL_AGITATOR]->setToggleState(g_bAgitatorEnabled ? TOGGLE_STATE_PAUSE : TOGGLE_STATE_PLAY);
 
   drawClearScreen();
 }
@@ -234,8 +246,8 @@ void loop() {
     g_updateTick = ! g_updateTick;
 
 #ifdef ENABLE_SSR
-    digitalWrite(SSR1_PIN, g_bHeaterEnabled && (g_currentTemperatur < g_targetTemperatur) ? HIGH : LOW);
-    digitalWrite(SSR2_PIN, g_bAgitatorEnabled ? HIGH : LOW);
+    digitalWrite(SSR_HEATER_PIN, g_bHeaterEnabled && (g_currentTemperatur < g_targetTemperatur) ? HIGH : LOW);
+    digitalWrite(SSR_AGITATOR_PIN, g_bAgitatorEnabled ? HIGH : LOW);
 #endif
 
     if (g_bTimerEnabled) {

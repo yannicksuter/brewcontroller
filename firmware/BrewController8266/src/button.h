@@ -1,7 +1,7 @@
 #ifndef _BUTTON_
 #define _BUTTON_
 
-#define BUTTON_LONG_PRESS_DELAY 3000
+#define BUTTON_LONG_PRESS_DELAY 1000
 
 class Button;
 typedef void (*eventCallbackPtr)(int, Button*);

@@ -1,0 +1,4 @@
+## TODO
+
+* fix timer reset event: after reset the timer starts instantly because of the button-release event
+* fix layout: spacing between tab-buttons and horizontal blocks are not nice yet

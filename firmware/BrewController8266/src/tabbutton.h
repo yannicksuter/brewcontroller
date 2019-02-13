@@ -7,6 +7,7 @@ class TabButton : public Button {
 public:
   TabButton(int id, int x, int y, int width, int height, int numTabs);
 
+  inline int getPrevTab() { return m_nPrevTab; };
   inline int getCurTab() { return m_nCurTab; };
 
   virtual void draw(bool forceDraw);
@@ -15,6 +16,7 @@ public:
 
 private:
   int m_nTabCount;
+  int m_nPrevTab;
   int m_nCurTab;
   int m_nTabWidth;
 };
