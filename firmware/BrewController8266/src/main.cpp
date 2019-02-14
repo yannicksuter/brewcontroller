@@ -30,13 +30,10 @@ ADC_MODE(ADC_VCC);
 
 // controler states
 Timer g_timer;
-static const int UPDATE_INTERVAL = 1000;
 static const int UI_ROTATION = 3;
 static const int TEMPERATUR_RESOLUTION = 12;
 
 static int g_nCurTab = 0;
-static long g_curTimestamp;
-// static long g_lastUpdate = 0;
 static bool g_updateTick = false;
 
 bool g_bTimerEnabled = false;
@@ -255,28 +252,16 @@ digitalWrite(BUZZER_PIN, LOW);
 }
 
 void loop() {
-  g_curTimestamp = millis();
+  static unsigned long curTimestamp = millis();
   g_currentTemperatur = getTemperature();
-  g_nElapsedTimeSeconds = g_timer.update(g_bTimerEnabled, g_curTimestamp) / 1000;
+  g_nElapsedTimeSeconds = g_timer.update(g_bTimerEnabled, curTimestamp) / 1000;
   g_updateTick = (g_nElapsedTimeSeconds%2) == 0;
 
   if (g_nElapsedTimeSeconds >= g_targetTimeSeconds) {
     disableTimer(0);
   }
 
-  updateTouchScreen(g_curTimestamp);
-
-  // // update control states
-  // if ( (g_curTimestamp-g_lastUpdate) > UPDATE_INTERVAL ) {
-  //   g_updateTick = ! g_updateTick;
-  //   if (g_bTimerEnabled) {
-  //     g_targetTimeSeconds -= 1;
-  //     if (g_targetTimeSeconds <= 0) {
-  //       disableTimer(0);
-  //     }
-  //   }
-  //   g_lastUpdate = g_curTimestamp;
-  // }
+  updateTouchScreen(curTimestamp);
 
   #ifdef ENABLE_SSR
       digitalWrite(SSR_HEATER_PIN, g_bHeaterEnabled && (g_currentTemperatur < g_targetTemperatur) ? HIGH : LOW);
