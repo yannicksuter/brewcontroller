@@ -1,6 +1,8 @@
 #include <Arduino.h>
+#include "settings.h"
 #include "button.h"
 
+extern void beep(int ms);
 extern void drawXPM(int16_t pos_x, int16_t pos_y, int16_t width, int16_t height, const char *xpm);
 
 Button::Button(int id, int x, int y, int width, int height):
@@ -74,12 +76,13 @@ bool Button::verifyPressed(int x, int y, long timestamp) {
   if (m_bEnabled && x >= m_x && x <= m_x+m_width && y >= m_y && y <= m_y+m_height) {
     changePressedState(true, timestamp);
     if (m_pCallbackPressed) {
-      m_bPressedEvent = true;
       m_pCallbackPressed(m_id, this);
     }
-    if ((timestamp-m_nLongPressStartTime) > BUTTON_LONG_PRESS_DELAY && m_pCallbackLongPressed) {
+    if ((timestamp-m_nLongPressStartTime) > BUTTON_LONG_PRESS_DELAY) {
       m_bLongPressedEvent = true;
-      m_pCallbackLongPressed(m_id, this);
+      if (m_pCallbackLongPressed) {
+        m_pCallbackLongPressed(m_id, this);
+      }
     }
     return true;
   }
@@ -91,6 +94,10 @@ bool Button::verifyReleased(int x, int y, long timestamp) {
   m_bReleasedEvent = false;
   if (m_bEnabled && x >= m_x && x <= m_x+m_width && y >= m_y && y <= m_y+m_height) {
     m_bReleasedEvent = true;
+    if (m_pCallbackReleased && !m_bLongPressedEvent) {
+      beep(BEEP_SHORT);
+      m_pCallbackReleased(m_id, this);
+    }
     changePressedState(false, timestamp);
     return true;
   }

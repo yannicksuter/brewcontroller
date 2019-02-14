@@ -20,4 +20,7 @@
 #define DEFAULT_TIME_SEC 4*60
 #define DEFAULT_TEMPERATUR 65
 
+#define BEEP_SHORT 30
+#define BEEP_LONG 100
+
 #endif

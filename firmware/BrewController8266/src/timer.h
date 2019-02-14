@@ -5,13 +5,13 @@ class Timer {
 public:
   Timer();
 
-  void reset();
+  void reset(int seconds);
   int update(bool countElapsedTime, unsigned long ts);
 
-  inline unsigned long getElapsedTime() { return m_nElapsedTime; }
+  inline unsigned long getElapsedTime() { return m_nElapsedTimeMS; }
 
 protected:
-  unsigned long m_nElapsedTime;
+  unsigned long m_nElapsedTimeMS;
   unsigned long m_nLastUpdateMS;
 };
 
