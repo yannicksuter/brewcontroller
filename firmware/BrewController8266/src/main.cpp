@@ -8,6 +8,7 @@
 #include "images.h"
 #include "rendering.h"
 #include "touchscreen.h"
+#include "timer.h"
 
 #define ENABLE_SSR
 // #define ENABLE_TEMPERATUR
@@ -21,21 +22,26 @@
 #ifdef ENABLE_TEMPERATUR
 OneWire oneWire(TEMP_PIN);
 DallasTemperature DS18B20(&oneWire);
+int g_tempDelayInMillis;
+unsigned long g_lastTempRequest;
 #endif
 
 ADC_MODE(ADC_VCC);
 
 // controler states
+Timer g_timer;
 static const int UPDATE_INTERVAL = 1000;
 static const int UI_ROTATION = 3;
+static const int TEMPERATUR_RESOLUTION = 12;
 
 static int g_nCurTab = 0;
 static long g_curTimestamp;
-static long g_lastUpdate = 0;
+// static long g_lastUpdate = 0;
 static bool g_updateTick = false;
 
 bool g_bTimerEnabled = false;
-long g_targetTimeSeconds = DEFAULT_TIME_SEC;
+unsigned long g_nElapsedTimeSeconds = 0;
+unsigned long g_targetTimeSeconds = DEFAULT_TIME_SEC;
 
 bool g_bHeaterEnabled = false;
 bool g_bAgitatorEnabled = true;
@@ -44,7 +50,7 @@ float g_currentTemperatur = 0;
 
 const char *TABCONFIG_FILENAME = "/tabconfigs";
 
-int g_loadedTime = 0;
+unsigned long g_loadedTime = 0;
 int g_loadedTemp = 0;
 void loadConfig(int id) {
   if (SPIFFS.begin()) {
@@ -100,6 +106,7 @@ void disableTimer(long remainingSeconds) {
   }
 }
 
+bool g_bBlockNextTimerRelease = false;
 void callbackLongPressed(int id, Button *src) {
   switch(id) {
     case CNTL_TIME_PLUS: {
@@ -121,6 +128,7 @@ void callbackLongPressed(int id, Button *src) {
     case CNTL_TIMER: {
       if (src->getLongPressCounter() == 0) {
         disableTimer(DEFAULT_TIME_SEC);
+        g_bBlockNextTimerRelease = true;
       }
       break;
     }
@@ -158,8 +166,11 @@ void callbackReleased(int id, Button *src) {
       break;
     }
     case CNTL_TIMER: {
-      g_bTimerEnabled = !g_bTimerEnabled;
-      controls[CNTL_TIMER]->setToggleState(g_bTimerEnabled ? TOGGLE_STATE_PAUSE : TOGGLE_STATE_PLAY);
+      if (!g_bBlockNextTimerRelease) {
+        g_bTimerEnabled = !g_bTimerEnabled;
+        controls[CNTL_TIMER]->setToggleState(g_bTimerEnabled ? TOGGLE_STATE_PAUSE : TOGGLE_STATE_PLAY);
+      }
+      g_bBlockNextTimerRelease = false;
       break;
     }
     case CNTL_TEMP_PLUS: {
@@ -194,10 +205,11 @@ void callbackReleased(int id, Button *src) {
 float getTemperature() {
   float tempC = 0.f;
 #ifdef ENABLE_TEMPERATUR
-  do {
-    DS18B20.requestTemperatures();
+  if (millis() - g_lastTempRequest >= g_tempDelayInMillis) {
     tempC = DS18B20.getTempCByIndex(0);
-  } while (tempC == 85.0 || tempC == (-127.0));
+    g_lastTempRequest = millis();
+    DS18B20.requestTemperatures();
+  }
 #endif
   return tempC;
 }
@@ -220,6 +232,12 @@ digitalWrite(BUZZER_PIN, LOW);
 
 #ifdef ENABLE_TEMPERATUR
   DS18B20.begin();
+  DS18B20.getAddress(tempDeviceAddress, 0);
+  DS18B20.setResolution(tempDeviceAddress, TEMPERATUR_RESOLUTION);
+  DS18B20.setWaitForConversion(false);
+  DS18B20.requestTemperatures();
+  g_tempDelayInMillis = 750 / (1 << (12 - TEMPERATUR_RESOLUTION));
+  g_lastTempRequest = millis();
 #endif
 
   loadConfig(g_nCurTab);
@@ -238,29 +256,36 @@ digitalWrite(BUZZER_PIN, LOW);
 
 void loop() {
   g_curTimestamp = millis();
-  updateTouchScreen(g_curTimestamp);
+  g_currentTemperatur = getTemperature();
+  g_nElapsedTimeSeconds = g_timer.update(g_bTimerEnabled, g_curTimestamp) / 1000;
+  g_updateTick = (g_nElapsedTimeSeconds%2) == 0;
 
-  // update control states
-  if ( (g_curTimestamp-g_lastUpdate) > UPDATE_INTERVAL ) {
-    g_currentTemperatur = getTemperature();
-    g_updateTick = ! g_updateTick;
-
-#ifdef ENABLE_SSR
-    digitalWrite(SSR_HEATER_PIN, g_bHeaterEnabled && (g_currentTemperatur < g_targetTemperatur) ? HIGH : LOW);
-    digitalWrite(SSR_AGITATOR_PIN, g_bAgitatorEnabled ? HIGH : LOW);
-#endif
-
-    if (g_bTimerEnabled) {
-      g_targetTimeSeconds -= 1;
-      if (g_targetTimeSeconds <= 0) {
-        disableTimer(0);
-      }
-    }
-    g_lastUpdate = g_curTimestamp;
+  if (g_nElapsedTimeSeconds >= g_targetTimeSeconds) {
+    disableTimer(0);
   }
 
+  updateTouchScreen(g_curTimestamp);
+
+  // // update control states
+  // if ( (g_curTimestamp-g_lastUpdate) > UPDATE_INTERVAL ) {
+  //   g_updateTick = ! g_updateTick;
+  //   if (g_bTimerEnabled) {
+  //     g_targetTimeSeconds -= 1;
+  //     if (g_targetTimeSeconds <= 0) {
+  //       disableTimer(0);
+  //     }
+  //   }
+  //   g_lastUpdate = g_curTimestamp;
+  // }
+
+  #ifdef ENABLE_SSR
+      digitalWrite(SSR_HEATER_PIN, g_bHeaterEnabled && (g_currentTemperatur < g_targetTemperatur) ? HIGH : LOW);
+      digitalWrite(SSR_AGITATOR_PIN, g_bAgitatorEnabled ? HIGH : LOW);
+  #endif
+
   // rendering
-  drawTimer((int)(g_targetTimeSeconds/60.f), g_targetTimeSeconds%60, g_bTimerEnabled?g_updateTick:false);
+  int timeRemaining = g_targetTimeSeconds-g_nElapsedTimeSeconds;
+  drawTimer((int)(timeRemaining/60.f), timeRemaining%60, g_bTimerEnabled?g_updateTick:false);
   drawTemperatur(g_currentTemperatur, (float)g_targetTemperatur, g_updateTick);
   drawIcons(g_bHeaterEnabled, g_bAgitatorEnabled);
   drawControls();

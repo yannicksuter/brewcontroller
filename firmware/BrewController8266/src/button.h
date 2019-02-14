@@ -12,8 +12,8 @@ class Button {
     Button(int id, int x, int y, int width, int height, const char *xpm_up, const char *xpm_down);
     Button(int id, int x, int y, int width, int height, const char *xpm_up_state1, const char *xpm_down_state1, const char *xpm_up_state2, const char *xpm_down_state2);
 
-    void enable();
-    void disable();
+    inline void enable() { m_bEnabled = true; };
+    inline void disable() { m_bEnabled = false; };
     virtual void draw(bool forceDraw);
 
     void setToggleState(uint8_t state);
@@ -24,11 +24,15 @@ class Button {
     inline void registerLongPressCallback(eventCallbackPtr pLongPressedCB) { m_pCallbackLongPressed = pLongPressedCB; };
     inline void registerReleaseCallback(eventCallbackPtr pReleasedCB) { m_pCallbackReleased = pReleasedCB; };
 
+    inline bool isPressed() { return m_bPressedEvent; }
+    inline bool isLongPressed() { return m_bLongPressedEvent; }
+    inline bool isReleased() { return m_bReleasedEvent; }
+
     virtual bool verifyPressed(int x, int y, long timestamp);
     virtual bool verifyReleased(int x, int y, long timestamp);
 
   protected:
-    void changeState(bool bIsPressed, long timestamp);
+    void changePressedState(bool bIsPressed, long timestamp);
 
     int m_id;
     int m_x, m_y;
@@ -40,7 +44,6 @@ class Button {
     const char* m_pStateImagesDown[2];
 
     bool m_bEnabled;
-    bool m_bIsPressedState;
     bool m_bDirty;
 
     long m_nLongPressStartTime;
@@ -49,6 +52,9 @@ class Button {
     eventCallbackPtr m_pCallbackPressed;
     eventCallbackPtr m_pCallbackLongPressed;
     eventCallbackPtr m_pCallbackReleased;
+    bool m_bPressedEvent;
+    bool m_bLongPressedEvent;
+    bool m_bReleasedEvent;
 };
 
 #endif
