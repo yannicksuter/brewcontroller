@@ -5,7 +5,7 @@ class Timer {
 public:
   Timer();
 
-  void reset(int seconds);
+  int reset(int seconds);
   int update(bool countElapsedTime, unsigned long ts);
 
   inline unsigned long getElapsedTime() { return m_nElapsedTimeMS; }

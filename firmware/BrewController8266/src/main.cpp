@@ -57,7 +57,7 @@ void beep(int ms) {
 }
 
 void disableTimer(long remainingSeconds) {
-  g_timer.reset(g_targetTimeSeconds-remainingSeconds);
+  g_nElapsedTimeSeconds = g_timer.reset(g_targetTimeSeconds-remainingSeconds) / 1000;
   if (g_bTimerEnabled) {
     g_bTimerEnabled = false;
     if (remainingSeconds == 0) {
@@ -68,7 +68,6 @@ void disableTimer(long remainingSeconds) {
       }
   #endif
     }
-    controls[CNTL_TIMER]->setToggleState(TOGGLE_STATE_PLAY);
   }
 }
 
@@ -91,6 +90,7 @@ void loadConfig(int id) {
     }
     SPIFFS.end();
   }
+  g_bHeaterEnabled = false;
   disableTimer(g_targetTimeSeconds);
 }
 
@@ -118,11 +118,7 @@ void callbackLongPressed(int id, Button *src) {
     }
     case CNTL_TIME_MINUS: {
       if (src->getLongPressCounter()%2 == 0) {
-        if (g_targetTimeSeconds > 60) {
-          g_targetTimeSeconds -= 60;
-        } else {
-          disableTimer(0);
-        }
+        g_targetTimeSeconds = (g_targetTimeSeconds >= 60) ? g_targetTimeSeconds-60 : 0;
       }
       break;
     }
@@ -169,7 +165,6 @@ void callbackReleased(int id, Button *src) {
     }
     case CNTL_TIMER: {
       g_bTimerEnabled = !g_bTimerEnabled;
-      controls[CNTL_TIMER]->setToggleState(g_bTimerEnabled ? TOGGLE_STATE_PAUSE : TOGGLE_STATE_PLAY);
       break;
     }
     case CNTL_TEMP_PLUS: {
@@ -182,12 +177,10 @@ void callbackReleased(int id, Button *src) {
     }
     case CNTL_HEATER: {
       g_bHeaterEnabled = !g_bHeaterEnabled;
-      controls[CNTL_HEATER]->setToggleState(g_bHeaterEnabled ? TOGGLE_STATE_PAUSE : TOGGLE_STATE_PLAY);
       break;
     }
     case CNTL_AGITATOR: {
       g_bAgitatorEnabled = !g_bAgitatorEnabled;
-      controls[CNTL_AGITATOR]->setToggleState(g_bAgitatorEnabled ? TOGGLE_STATE_PAUSE : TOGGLE_STATE_PLAY);
       break;
     }
     case CNTL_TAB: {
@@ -248,7 +241,6 @@ digitalWrite(BUZZER_PIN, LOW);
     controls[i]->registerReleaseCallback(callbackReleased);
     controls[i]->registerLongPressCallback(callbackLongPressed);
   }
-  controls[CNTL_AGITATOR]->setToggleState(g_bAgitatorEnabled ? TOGGLE_STATE_PAUSE : TOGGLE_STATE_PLAY);
 
   drawClearScreen();
 }
@@ -263,6 +255,10 @@ void loop() {
   if (g_nElapsedTimeSeconds >= g_targetTimeSeconds) {
     disableTimer(0);
   }
+
+  controls[CNTL_TIMER]->setToggleState(g_bTimerEnabled ? TOGGLE_STATE_PAUSE : TOGGLE_STATE_PLAY);
+  controls[CNTL_HEATER]->setToggleState(g_bHeaterEnabled ? TOGGLE_STATE_PAUSE : TOGGLE_STATE_PLAY);
+  controls[CNTL_AGITATOR]->setToggleState(g_bAgitatorEnabled ? TOGGLE_STATE_PAUSE : TOGGLE_STATE_PLAY);
 
   updateTouchScreen(g_curTimestamp);
 

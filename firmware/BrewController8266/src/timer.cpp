@@ -4,9 +4,10 @@ Timer::Timer() {
   reset(0);
 }
 
-void Timer::reset(int seconds) {
+int Timer::reset(int seconds) {
   m_nElapsedTimeMS = seconds*1000;
   m_nLastUpdateMS = 0;
+  return m_nElapsedTimeMS;
 }
 
 int Timer::update(bool countElapsedTime, unsigned long ts) {
