@@ -32,7 +32,8 @@ bool TabButton::verifyPressed(int x, int y, long timestamp) {
 bool TabButton::verifyReleased(int x, int y, long timestamp) {
   for (int i=0; i<m_nTabCount;i++) {
     if (x>=(m_x+i*m_nTabWidth) && x<=(m_x+(i+1)*m_nTabWidth) && y >= m_y && y <= m_y+m_height) {
-      if (m_nCurTab != i) {
+      // only change tab on normal release event
+      if (m_nCurTab != i && !m_bLongPressedEvent) {
         m_nPrevTab = m_nCurTab;
         m_nCurTab = i;
         m_bDirty = true;

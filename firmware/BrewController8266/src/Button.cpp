@@ -83,6 +83,7 @@ bool Button::verifyPressed(int x, int y, long timestamp) {
       if (m_pCallbackLongPressed) {
         m_pCallbackLongPressed(m_id, this);
       }
+      m_nLongPressCounter++;
     }
     return true;
   }

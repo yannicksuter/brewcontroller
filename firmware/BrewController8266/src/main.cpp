@@ -111,15 +111,11 @@ void saveConfig(int id) {
 void callbackLongPressed(int id, Button *src) {
   switch(id) {
     case CNTL_TIME_PLUS: {
-      if (src->getLongPressCounter()%2 == 0) {
-        g_targetTimeSeconds += 60;
-      }
+      g_targetTimeSeconds += 60;
       break;
     }
     case CNTL_TIME_MINUS: {
-      if (src->getLongPressCounter()%2 == 0) {
-        g_targetTimeSeconds = (g_targetTimeSeconds >= 60) ? g_targetTimeSeconds-60 : 0;
-      }
+      g_targetTimeSeconds = (g_targetTimeSeconds >= 60) ? g_targetTimeSeconds-60 : 0;
       break;
     }
     case CNTL_TIMER: {
@@ -129,20 +125,17 @@ void callbackLongPressed(int id, Button *src) {
       break;
     }
     case CNTL_TEMP_PLUS: {
-      if (src->getLongPressCounter()%2 == 0) {
-        g_targetTemperatur += 1;
-      }
+      g_targetTemperatur += 1;
       break;
     }
     case CNTL_TEMP_MINUS: {
-      if (src->getLongPressCounter()%2 == 0) {
-        g_targetTemperatur = (g_targetTemperatur > 1) ? g_targetTemperatur-1 : 0;
-      }
+      g_targetTemperatur = (g_targetTemperatur > 1) ? g_targetTemperatur-1 : 0;
       break;
     }
     case CNTL_TAB: {
-      if (src->getLongPressCounter() == 0) {
-        saveConfig(((TabButton*)src)->getCurTab());
+      TabButton *pTabButton = (TabButton*)src;
+      if (pTabButton->getLongPressCounter() == 0) {
+        saveConfig(pTabButton->getCurTab());
       }
       break;
     }
