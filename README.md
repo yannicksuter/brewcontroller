@@ -5,6 +5,8 @@ Brewing Automation using a ESP8266 Microprocessor.
 * Timer + Buzzer
 * Target Temperatur control
 * Agitator ON/OFF
+* 4 Save-slots for different timer/temperatur configurations
+* Finger-friendly touchscreen and UI design!
 
 ## UI 
 
